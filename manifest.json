@@ -2,7 +2,7 @@
   "name": "Skat Anschreibung",
   "short_name": "SkatScore",
   "description": "Skat Punkte-Anschreibung mit Seeger-Fabian und Bierlachs",
-  "start_url": "./skat.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0f0f1a",
