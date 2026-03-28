@@ -12,6 +12,10 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<script src="lang.js"></script>
+<script src="calc.js"></script>
+<script src="ui.js"></script>
+<script src="app.js"></script>
 <div class="app">
   <header>
     <div class="logo"><span>♠</span> Skat</div>
@@ -79,7 +83,18 @@
     <div class="sum-expand">▲</div>
   </div>
 
+  <!-- Queue-Bar: Bock & Ramsch -->
+  <div class="queue-bar" id="queueBar">
+    <button class="queue-btn" id="queueBockBtn" onclick="toggleQueueBlock('bock')" title="Bock-Runden vormerken">
+      <span>🔔</span><span class="queue-count" id="queueBockCount">0</span>
+    </button>
+    <button class="queue-btn" id="queueRamschBtn" onclick="toggleQueueBlock('ramsch')" title="Pflicht-Ramsch vormerken">
+      <span>💀</span><span class="queue-count" id="queueRamschCount">0</span>
+    </button>
+  </div>
+
   <div class="panel-content">
+    <div class="ramsch-restrict-hint" id="ramschRestrictHint">💀 Pflicht-Ramsch – nur Ramsch oder RGH erlaubt</div>
 
     <!-- ══ STUFE 1: Reizen ══ -->
     <div id="stage1">
@@ -300,10 +315,5 @@
 </div>
 
 <div class="toast" id="toast"><span id="toastText"></span> <button id="toastUndo"></button></div>
-
-<script src="lang.js"></script>
-<script src="calc.js"></script>
-<script src="ui.js"></script>
-<script src="app.js"></script>   <!-- zuletzt, startet Init -->
 </body>
 </html>
