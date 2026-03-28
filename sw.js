@@ -5,7 +5,10 @@ const FILES = [
   './',
   './index.html',
   './style.css',
-  './script.js',
+  './lang.js',
+  './calc.js',
+  './ui.js',
+  './app.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
@@ -36,8 +39,11 @@ self.addEventListener('fetch', e => {
   // Prüfen, ob es die Hauptseite, das Skript oder das CSS ist
   const isCore = url.pathname.endsWith('.html') || 
                  url.pathname.endsWith('/') || 
-                 url.pathname.endsWith('script.js') || 
                  url.pathname.endsWith('style.css') ||
+                 url.pathname.endsWith('lang.js') || 
+                 url.pathname.endsWith('calc.js') || 
+                 url.pathname.endsWith('ui.js') || 
+                 url.pathname.endsWith('app.js') || 
                  url.pathname.endsWith('manifest.json');
 
   if (isCore) {

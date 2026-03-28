@@ -1,0 +1,389 @@
+// ===== app.js =====
+// State, Persistenz, Queue-Logik, Runden-Verwaltung, Einstellungen, Theme, Init.
+// Wird als letztes geladen. Kennt alle anderen Module.
+// Ladereihenfolge: lang.js → calc.js → ui.js → app.js
+
+// ===== STATE & GLOBALS =====
+let state = { names:['Spieler 1','Spieler 2','Spieler 3'], rounds:[], totals:[0,0,0], lang:'de', has4:false, queue:[] };
+let moneySettings = { rate:0, currency:'€' };
+let openRoundIdx  = -1;
+let editRoundIdx  = -1;
+let selectedPlayers = [], sign = 1, lastDeleted = null, panelOpen = true, tableView = 'std';
+let lang = 'de';
+
+let calc = {
+  type:'', farbeIdx:0, factor:2, nullVal:23,
+  jackCount:1, jackDir:'mit',
+  hand:false, schneider:false, schneiderA:false, schwarz:false, schwarzA:false, ouvert:false,
+  kontra:false, re:false, bock:false, jungfrau:false, geschoben:0, verloren:false
+};
+
+// ===== HILFSFUNKTIONEN =====
+function getAussetzer(){
+  if(!state.has4) return -1;
+  let idx=0;
+  for(const r of state.rounds){
+    if(!r.isRamschGH && r.typeKey!=='rgh') idx=(idx+1)%4;
+  }
+  return idx;
+}
+
+function countRegularRounds(){
+  return state.rounds.filter(r=>!r.isRamschGH).length;
+}
+
+function hasOpenRound(){
+  if(openRoundIdx>=0 && (!state.rounds[openRoundIdx] || !state.rounds[openRoundIdx].open)){
+    openRoundIdx=-1;
+  }
+  if(openRoundIdx<0){
+    const idx=state.rounds.findIndex(r=>r.open===true);
+    if(idx>=0) openRoundIdx=idx;
+  }
+  return openRoundIdx>=0;
+}
+
+// ===== PERSISTENZ =====
+function save(){
+  try{ localStorage.setItem('skat_v4', JSON.stringify(state)); }catch(e){}
+}
+function load(){
+  try{
+    const d=localStorage.getItem('skat_v4');
+    if(d){ state=JSON.parse(d); if(!state.queue) state.queue=[]; }
+  }catch(e){}
+}
+
+// ===== QUEUE =====
+function queueBlockSize(){ return state.has4 ? 4 : 3; }
+
+function queueTailIsBlock(tp){
+  const n=queueBlockSize(), q=state.queue;
+  if(q.length<n) return false;
+  for(let i=q.length-n; i<q.length; i++){ if(q[i].type!==tp) return false; }
+  return true;
+}
+
+function toggleQueueBlock(tp){
+  if(queueTailIsBlock(tp)){
+    state.queue.splice(state.queue.length-queueBlockSize(), queueBlockSize());
+  } else {
+    const n=queueBlockSize();
+    for(let i=0;i<n;i++) state.queue.push({type:tp});
+  }
+  save(); renderAll(); updateQueueUI();
+}
+
+function updateQueueUI(){
+  const q=state.queue;
+  const bockCount  =q.filter(x=>x.type==='bock').length;
+  const ramschCount=q.filter(x=>x.type==='ramsch').length;
+  document.getElementById('queueBockCount').textContent  =bockCount;
+  document.getElementById('queueRamschCount').textContent=ramschCount;
+  document.getElementById('queueBockBtn').classList.toggle('bock-active',    bockCount>0);
+  document.getElementById('queueRamschBtn').classList.toggle('ramsch-active', ramschCount>0);
+  const isRamschForced=q.length>0&&q[0].type==='ramsch';
+  const hint=document.getElementById('ramschRestrictHint');
+  if(hint) hint.style.display=isRamschForced?'':'none';
+  applyQueueTypeRestriction();
+}
+
+function applyQueueTypeRestriction(){
+  const isRamschForced=state.queue.length>0&&state.queue[0].type==='ramsch';
+  document.querySelectorAll('.type-btn').forEach(b=>{
+    const tp=b.dataset.type;
+    const blocked=isRamschForced&&tp!=='ramsch'&&tp!=='rgh';
+    b.disabled=blocked;
+    b.style.opacity=blocked?'0.25':'';
+  });
+}
+
+function currentQueueType(){
+  if(!state.queue||state.queue.length===0) return null;
+  return state.queue[0].type;
+}
+
+// ===== RUNDEN: Eintragen =====
+function addRound(){
+  if(editRoundIdx>=0){ saveEditRound(); return; }
+  if(hasOpenRound()){
+    // Stufe 2: offene Runde abschließen
+    const r=state.rounds[openRoundIdx];
+    const n=state.has4?4:3;
+    const value=r.noPlayer?0:getFinalValue();
+    r.value=value;
+    r.open=false; delete r.open;
+    r.typeKey=getTypeKey()||(r.savedCalc?r.typeKey:'');
+    r.label=getShortLabel()||r.label;
+    // Queue-Slot verbrauchen
+    const queueBefore=r.queueBefore||[...state.queue];
+    const nextQ=queueBefore[0];
+    if(nextQ){
+      if(nextQ.type==='ramsch'){
+        const isRGH=calc.type==='rgh'||r.isRamschGH;
+        if(!isRGH) state.queue.shift();
+      } else if(nextQ.type==='bock'){
+        state.queue.shift();
+      }
+    }
+    r.wasBock  =!!(nextQ&&nextQ.type==='bock');
+    r.wasRamsch=!!(nextQ&&nextQ.type==='ramsch');
+    const base=openRoundIdx>0?[...state.rounds[openRoundIdx-1].totals]:new Array(n).fill(0);
+    while(base.length<n) base.push(0);
+    if(!r.noPlayer) r.players.forEach(i=>{ base[i]+=value; });
+    r.totals=[...base];
+    state.totals=[...base];
+    openRoundIdx=-1;
+    save();
+  } else {
+    // Stage 1 direkt (Ramsch/Leer)
+    const isRamschGH=calc.type==='rgh';
+    const isLeer=calc.type==='leer';
+    const noPlayer=isLeer||selectedPlayers.length===0;
+    const value=isLeer?0:(selectedPlayers.length>0?getFinalValue():0);
+    const label=isLeer?getShortLabel():(selectedPlayers.length>0?getShortLabel():'');
+    const typeKey=getTypeKey();
+    const aussetzer=state.has4?getAussetzer():-1;
+    const newTotals=[...state.totals];
+    while(newTotals.length<(state.has4?4:3)) newTotals.push(0);
+    if(!isLeer) selectedPlayers.forEach(i=>{ newTotals[i]+=value; });
+    const queueBefore=[...state.queue];
+    const nextQ=state.queue[0];
+    let wasBock=false, wasRamsch=false;
+    if(nextQ){
+      if(nextQ.type==='ramsch'){ const isRGH=calc.type==='rgh'; if(!isRGH) state.queue.shift(); wasRamsch=true; }
+      else if(nextQ.type==='bock'){ state.queue.shift(); wasBock=true; }
+    }
+    state.rounds.push({players:isLeer?[]:[...selectedPlayers],value,label,typeKey,noPlayer,isRamschGH,aussetzer,totals:[...newTotals],queueBefore,wasBock,wasRamsch});
+    state.totals=newTotals; save();
+  }
+  openRoundIdx=-1;
+  resetPanel();
+  panelOpen=true;
+  document.getElementById('inputPanel').classList.add('open');
+  renderAll(); updateCalcUI(); updatePanelHeight(); updateQueueUI();
+}
+
+function cancelOpenRound(){
+  if(editRoundIdx>=0){ cancelEditRound(); resetPanel(); renderAll(); return; }
+  if(!hasOpenRound()) return;
+  state.rounds.splice(openRoundIdx,1);
+  openRoundIdx=-1;
+  save();
+}
+
+// ===== UNDO =====
+function undoLast(){
+  hideToast();
+  if(state.rounds.length===0) return;
+  lastDeleted=state.rounds.pop();
+  if(lastDeleted.queueBefore!==undefined) state.queue=[...lastDeleted.queueBefore];
+  if(state.rounds.length===0){ state.totals=state.has4?[0,0,0,0]:[0,0,0]; }
+  else { state.totals=[...state.rounds[state.rounds.length-1].totals]; }
+  save(); renderAll(); showToast(); updateQueueUI();
+}
+
+let toastTimer;
+function showToast(){
+  document.getElementById('toastText').textContent=t('eingetragen');
+  document.getElementById('toast').classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(hideToast,4000);
+}
+function hideToast(){ document.getElementById('toast').classList.remove('show'); }
+
+// ===== RESET =====
+function closeReset(){ document.getElementById('resetModal').classList.remove('show'); }
+function confirmReset(){
+  openRoundIdx=-1;
+  state.rounds=[]; state.totals=state.has4?[0,0,0,0]:[0,0,0]; state.queue=[];
+  save(); resetPanel(); renderAll(); closeReset(); updateQueueUI();
+}
+
+// ===== EINSTELLUNGEN =====
+function saveSettings(){
+  const r=parseFloat(document.getElementById('moneyRate').value)||0;
+  moneySettings.rate=r;
+  try{ localStorage.setItem('skat_money',JSON.stringify(moneySettings)); }catch(e){}
+  renderTable();
+}
+function loadSettings(){
+  try{ const d=localStorage.getItem('skat_money'); if(d) moneySettings=JSON.parse(d); }catch(e){}
+}
+function setCurrency(c){
+  moneySettings.currency=c;
+  document.querySelectorAll('.currency-btn').forEach(b=>b.classList.toggle('active',b.dataset.c===c));
+  saveSettings();
+}
+function openSettings(){
+  document.getElementById('moneyRate').value=moneySettings.rate||'';
+  document.querySelectorAll('.currency-btn').forEach(b=>b.classList.toggle('active',b.dataset.c===moneySettings.currency));
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings(){ document.getElementById('settingsModal').classList.remove('show'); }
+function closeSettingsOutside(e){ if(e.target.id==='settingsModal') closeSettings(); }
+
+// ===== SPRACHE =====
+function t(key){ return (T[lang]&&T[lang][key]) || T['de'][key] || key; }
+
+function toggleLangDropdown(e){
+  e.stopPropagation();
+  document.getElementById('langDropdown').classList.toggle('open');
+}
+function pickLang(l, e){
+  if(e) e.stopPropagation();
+  document.getElementById('langDropdown').classList.remove('open');
+  setLang(l);
+}
+document.addEventListener('click', ()=>{ const d=document.getElementById('langDropdown'); if(d) d.classList.remove('open'); });
+
+function setLang(l){
+  lang=l; state.lang=l; save();
+  const flags={'de':'🇩🇪','en':'🇬🇧','fr':'🇫🇷','es':'🇪🇸','it':'🇮🇹','da':'🇩🇰','th':'🇹🇭','vi':'🇻🇳'};
+  document.getElementById('langFlag').textContent=flags[l]||'🌐';
+  document.getElementById('langCode').textContent=l.toUpperCase();
+  document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active',o.dataset.lang===l));
+  applyTranslations(); buildNullBtns(); buildJackRow(); renderAll(); updateCalcUI();
+}
+
+function applyTranslations(){
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    el.textContent=t(el.getAttribute('data-t'));
+  });
+  if(editRoundIdx<0) document.getElementById('addBtn').textContent=t('eintragen');
+  else               document.getElementById('addBtn').textContent=t('speichern');
+  document.getElementById('modalTitle').textContent =t('modalTitle');
+  document.getElementById('modalText').textContent  =t('modalText');
+  document.getElementById('modalCancel').textContent=t('abbrechen');
+  document.getElementById('modalConfirm').textContent=t('loeschen');
+  document.getElementById('toastUndo').textContent  =t('rueckgaengig');
+  document.getElementById('thVal').textContent      =t('wert');
+  document.getElementById('thSpiel').textContent    =t('spiel');
+  const ep=document.getElementById('emptyText');
+  ep.innerHTML=t('emptyText').replace('\n','<br>');
+  document.getElementById('tab-std').textContent=t('tabStd');
+  document.getElementById('tab-sf').textContent =t('tabSf');
+  document.getElementById('tab-bl').textContent =t('tabBl');
+  updateSummaryBar(); updateHint();
+}
+
+// ===== FONT / WAKELOCK =====
+function toggleFont(){
+  const html=document.documentElement;
+  const LEVELS=['zoom-2','zoom-3','zoom-4'];
+  const cur=LEVELS.find(c=>html.classList.contains(c))||'zoom-2';
+  const next=LEVELS[(LEVELS.indexOf(cur)+1)%LEVELS.length];
+  html.classList.remove('zoom-2','zoom-3','zoom-4');
+  html.classList.add(next);
+  const labels={'zoom-2':'A','zoom-3':'A+','zoom-4':'A++'};
+  document.getElementById('fontBtn').textContent=labels[next];
+  try{ localStorage.setItem('skat_font',next); }catch(e){}
+}
+
+let wakeLockSentinel=null;
+async function toggleWakeLock(){
+  const btn=document.getElementById('wakeLockBtn');
+  if(wakeLockSentinel){
+    await wakeLockSentinel.release(); wakeLockSentinel=null; btn.style.opacity='0.4';
+  } else {
+    try{
+      wakeLockSentinel=await navigator.wakeLock.request('screen');
+      btn.style.opacity='1';
+      wakeLockSentinel.addEventListener('release',()=>{ wakeLockSentinel=null; btn.style.opacity='0.4'; });
+    }catch(e){}
+  }
+}
+if('wakeLock' in navigator){ document.getElementById('wakeLockBtn').style.display=''; }
+
+// ===== THEME =====
+function applyTheme(theme){
+  const html=document.documentElement;
+  if(theme==='light'){
+    html.setAttribute('data-theme','light');
+    document.getElementById('themeBtn').textContent='🌙';
+    document.querySelector('meta[name="theme-color"]').content='#1a3a8f';
+  } else {
+    html.setAttribute('data-theme','dark');
+    document.getElementById('themeBtn').textContent='☀';
+    document.querySelector('meta[name="theme-color"]').content='#1a1a2e';
+  }
+  try{ localStorage.setItem('skat_theme',theme); }catch(e){}
+}
+function toggleTheme(){
+  applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light');
+}
+(function(){
+  let theme=null;
+  try{ theme=localStorage.getItem('skat_theme'); }catch(e){}
+  if(!theme){ theme=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'; }
+  applyTheme(theme);
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e=>{
+    try{ if(!localStorage.getItem('skat_theme')) applyTheme(e.matches?'light':'dark'); }catch(ex){}
+  });
+})();
+
+// ===== INIT =====
+load();
+loadSettings();
+{ const idx=state.rounds.findIndex(r=>r.open===true); if(idx>=0) openRoundIdx=idx; }
+try{
+  const fp=localStorage.getItem('skat_font');
+  const labels={'zoom-2':'A','zoom-3':'A+','zoom-4':'A++'};
+  const cls=(fp&&labels[fp])?fp:'zoom-2';
+  document.documentElement.classList.add(cls);
+  document.getElementById('fontBtn').textContent=labels[cls];
+}catch(e){ document.documentElement.classList.add('zoom-2'); }
+
+lang=state.lang||'de';
+buildNullBtns();
+buildJackRow();
+applyTranslations();
+renderAll();
+updateCalcUI();
+updateQueueUI();
+document.getElementById('inputPanel').classList.add('open');
+
+// Offene Runde nach dem Laden wiederherstellen (Stage 2)
+if(hasOpenRound()){
+  const r=state.rounds[openRoundIdx];
+  const sc=r.savedCalc||{};
+  calc={type:sc.type||'', farbeIdx:sc.farbeIdx||0, factor:sc.factor||2,
+    nullVal:sc.nullVal||23, jackCount:1, jackDir:'mit',
+    hand:sc.hand||false, schneider:false, schneiderA:sc.schneiderA||false,
+    schwarz:false, schwarzA:sc.schwarzA||false, ouvert:sc.ouvert||false,
+    spitze:false, spitzeA:sc.spitzeA||false,
+    kontra:false, re:false, bock:false, jungfrau:sc.jungfrau||false,
+    geschoben:sc.geschoben||0, verloren:false};
+  const suitType=sc.type==='farbe'?['karo','herz','pik','kreuz'][sc.farbeIdx||0]:sc.type;
+  setType(suitType||'');
+  showStage2();
+  updateCalcUI(); updatePlayerBtns(); updatePanelHeight();
+}
+
+// ===== EVENT LISTENER =====
+document.getElementById('resetBtn').addEventListener('click', ()=>document.getElementById('resetModal').classList.add('show'));
+document.getElementById('undoBtn').addEventListener('click', undoLast);
+document.getElementById('toastUndo').onclick = function(){
+  if(!lastDeleted) return;
+  // Queue-Slot wieder verbrauchen (Undo des Undo)
+  if(lastDeleted.queueBefore!==undefined){
+    const qb=[...lastDeleted.queueBefore];
+    const nextQ=qb[0];
+    if(nextQ){
+      const isRGH=lastDeleted.isRamschGH;
+      if(nextQ.type==='ramsch'&&!isRGH) qb.shift();
+      else if(nextQ.type==='bock') qb.shift();
+    }
+    state.queue=qb;
+  }
+  state.rounds.push(lastDeleted);
+  state.totals=[...lastDeleted.totals];
+  lastDeleted=null; save(); renderAll(); hideToast(); updateQueueUI();
+};
+
+updatePanelHeight();
+window.addEventListener('resize', updatePanelHeight);
+
+// ===== SERVICE WORKER =====
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
