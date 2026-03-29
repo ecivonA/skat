@@ -197,8 +197,8 @@
   .table-wrap{position:fixed;top:90px;left:0;right:0;bottom:var(--panel-h,54px);overflow-y:auto;overflow-x:hidden;padding:0 8px;max-width:600px;margin:0 auto}
   .table-wrap.no-tabs{top:58px}
   table{width:100%;border-collapse:collapse}
-  thead th{background:var(--card);color:var(--accent);font-family:'Playfair Display',serif;font-size:12px;font-weight:700;padding:8px 5px;text-align:left;border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:10}
-  thead th:first-child{width:24px;color:var(--muted);font-size:9px}
+  thead th{background:var(--card);color:var(--accent);font-family:'Playfair Display',serif;font-size:12px;font-weight:700;padding:8px 5px;text-align:center;border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:10}
+  thead th:first-child{width:24px;color:var(--muted);font-size:9px;text-align:left}
   thead th.col-val{color:var(--muted);font-size:9px;font-family:'Source Code Pro',monospace;text-align:right}
   thead th.col-type{color:var(--muted);font-size:9px;font-family:'Source Code Pro',monospace;width:46px}
   thead th.aussetzer-col{opacity:.4;font-style:italic}
