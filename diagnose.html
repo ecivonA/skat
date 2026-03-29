@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Skat Diagnose</title>
+<style>
+  body { font-family: monospace; background: #111; color: #eee; padding: 20px; }
+  .ok  { color: #2ecc71; }
+  .err { color: #e74c3c; }
+  .warn{ color: #e8b04b; }
+  pre  { background: #222; padding: 10px; border-radius: 5px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h2>🔍 Skat Diagnose</h2>
+<div id="log"></div>
+
+<script>
+const log = document.getElementById('log');
+function ok(msg)   { log.innerHTML += `<div class="ok">✓ ${msg}</div>`; }
+function err(msg)  { log.innerHTML += `<div class="err">✗ ${msg}</div>`; }
+function warn(msg) { log.innerHTML += `<div class="warn">⚠ ${msg}</div>`; }
+function info(msg) { log.innerHTML += `<div>${msg}</div>`; }
+
+// Intercept global errors
+window.onerror = function(message, source, lineno, colno, error) {
+  err(`JS-Fehler: ${message}`);
+  err(`  Datei: ${source}`);
+  err(`  Zeile: ${lineno}, Spalte: ${colno}`);
+  if(error && error.stack) {
+    log.innerHTML += `<pre>${error.stack}</pre>`;
+  }
+  return false;
+};
+
+window.onunhandledrejection = function(e) {
+  err(`Unhandled Promise: ${e.reason}`);
+};
+</script>
+
+<!-- Gleiche Ladereihenfolge wie index.html -->
+<script src="lang.js"></script>
+<script>
+try {
+  if(typeof T !== 'undefined') ok('lang.js geladen – T vorhanden');
+  else err('lang.js: T fehlt');
+  if(typeof t === 'function') ok('t() Funktion verfügbar');
+  else err('t() Funktion fehlt');
+  info(`t('eintragen') = "${t('eintragen')}"`);
+} catch(e) { err('lang.js Check: ' + e.message); }
+</script>
+
+<script src="calc.js"></script>
+<script>
+try {
+  if(typeof FARBEN_VALS !== 'undefined') ok('calc.js geladen – FARBEN_VALS vorhanden');
+  else err('calc.js: FARBEN_VALS fehlt');
+  if(typeof computeRaw === 'function') ok('computeRaw() verfügbar');
+  else err('computeRaw() fehlt');
+  if(typeof getFinalValue === 'function') ok('getFinalValue() verfügbar');
+  else err('getFinalValue() fehlt');
+  if(typeof getShortLabel === 'function') ok('getShortLabel() verfügbar');
+  else err('getShortLabel() fehlt');
+} catch(e) { err('calc.js Check: ' + e.message); }
+</script>
+
+<script src="ui.js"></script>
+<script>
+try {
+  if(typeof renderAll === 'function') ok('ui.js geladen – renderAll() verfügbar');
+  else err('ui.js: renderAll() fehlt');
+  if(typeof updateQueueUI === 'function') ok('updateQueueUI() verfügbar');
+  else warn('updateQueueUI() fehlt – ui.js zu alt? (sollte in app.js sein, OK)');
+  if(typeof applyQueueTypeRestriction === 'function') ok('applyQueueTypeRestriction() verfügbar');
+  else warn('applyQueueTypeRestriction() fehlt – wird von app.js definiert');
+  if(typeof resetPanel === 'function') ok('resetPanel() verfügbar');
+  else err('resetPanel() fehlt');
+  if(typeof showStage2 === 'function') ok('showStage2() verfügbar');
+  else err('showStage2() fehlt');
+} catch(e) { err('ui.js Check: ' + e.message); }
+</script>
+
+<script src="app.js"></script>
+<script>
+try {
+  if(typeof state !== 'undefined') ok('app.js geladen – state vorhanden');
+  else err('app.js: state fehlt');
+  if(typeof updateQueueUI === 'function') ok('updateQueueUI() verfügbar');
+  else err('updateQueueUI() fehlt');
+  if(typeof addRound === 'function') ok('addRound() verfügbar');
+  else err('addRound() fehlt');
+  if(typeof lang !== 'undefined') ok(`lang = "${lang}"`);
+  else err('lang fehlt');
+  info(`state.lang = "${state ? state.lang : 'state fehlt'}"`);
+  info(`t('eintragen') = "${t('eintragen')}"`);
+  info(`t('emptyText') = "${t('emptyText')}"`);
+} catch(e) { err('app.js Check: ' + e.message); }
+</script>
+
+<script>
+// DOM-Elemente prüfen (diese Seite hat keinen Skat-DOM, also erwarten wir null)
+info('');
+info('--- DOM-Elemente (erwartet: nicht vorhanden auf dieser Seite) ---');
+['addBtn','resetBtn','undoBtn','emptyText','langFlag','langCode',
+ 'queueBockBtn','queueRamschBtn','queueBockCount','queueRamschCount',
+ 'ramschRestrictHint','toastUndo','modalTitle'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) ok(`#${id} gefunden`);
+  else warn(`#${id} nicht im Diagnose-DOM (normal – kein Skat-HTML hier)`);
+});
+</script>
+
+<p style="color:#aaa;margin-top:20px;font-size:12px">
+  Diese Seite im selben Ordner wie deine anderen JS-Dateien öffnen.<br>
+  Alle Zeilen sollten ✓ grün sein. Rote ✗ zeigen den Fehler.
+</p>
+</body>
+</html>
