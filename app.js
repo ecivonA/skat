@@ -357,11 +357,15 @@ try{
   const labels={'zoom-2':'A','zoom-3':'A+','zoom-4':'A++'};
   const cls=(fp&&labels[fp])?fp:'zoom-2';
   document.documentElement.classList.add(cls);
-  document.getElementById('fontBtn').textContent=labels[cls];
+  const fontBtn=document.getElementById('fontBtn');
+  if(fontBtn) fontBtn.textContent=labels[cls];
 }catch(e){ document.documentElement.classList.add('zoom-2'); }
 
 // WakeLock
-if('wakeLock' in navigator){ document.getElementById('wakeLockBtn').style.display=''; }
+if('wakeLock' in navigator){
+  const wlBtn=document.getElementById('wakeLockBtn');
+  if(wlBtn) wlBtn.style.display='';
+}
 
 // Offene Runde aus State wiederherstellen
 { const idx=state.rounds.findIndex(r=>r.open===true); if(idx>=0) openRoundIdx=idx; }
@@ -369,59 +373,63 @@ if('wakeLock' in navigator){ document.getElementById('wakeLockBtn').style.displa
 // Sprach-UI initialisieren (Flag + aktive Option markieren)
 {
   const flags={'de':'🇩🇪','en':'🇬🇧','fr':'🇫🇷','es':'🇪🇸','it':'🇮🇹','da':'🇩🇰','th':'🇹🇭','vi':'🇻🇳'};
-  document.getElementById('langFlag').textContent=flags[lang]||'🌐';
-  document.getElementById('langCode').textContent=lang.toUpperCase();
+  const flagEl=document.getElementById('langFlag');
+  const codeEl=document.getElementById('langCode');
+  if(flagEl) flagEl.textContent=flags[lang]||'🌐';
+  if(codeEl) codeEl.textContent=lang.toUpperCase();
   document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active',o.dataset.lang===lang));
 }
 
-// Alles rendern
-buildNullBtns();
-buildJackRow();
-applyTranslations();
-renderAll();
-updateCalcUI();
-updateQueueUI();
-document.getElementById('inputPanel').classList.add('open');
+// Alles rendern – nur wenn Skat-DOM vorhanden
+if(document.getElementById('inputPanel')){
+  buildNullBtns();
+  buildJackRow();
+  applyTranslations();
+  renderAll();
+  updateCalcUI();
+  updateQueueUI();
+  document.getElementById('inputPanel').classList.add('open');
 
-// Offene Runde: Stage 2 wiederherstellen
-if(hasOpenRound()){
-  const r=state.rounds[openRoundIdx];
-  const sc=r.savedCalc||{};
-  calc={type:sc.type||'', farbeIdx:sc.farbeIdx||0, factor:sc.factor||2,
-    nullVal:sc.nullVal||23, jackCount:1, jackDir:'mit',
-    hand:sc.hand||false, schneider:false, schneiderA:sc.schneiderA||false,
-    schwarz:false, schwarzA:sc.schwarzA||false, ouvert:sc.ouvert||false,
-    spitze:false, spitzeA:sc.spitzeA||false,
-    kontra:false, re:false, bock:false, jungfrau:sc.jungfrau||false,
-    geschoben:sc.geschoben||0, verloren:false};
-  const suitType=sc.type==='farbe'?['karo','herz','pik','kreuz'][sc.farbeIdx||0]:sc.type;
-  setType(suitType||'');
-  showStage2();
-  updateCalcUI(); updatePlayerBtns(); updatePanelHeight();
-}
-
-// ===== EVENT LISTENER =====
-document.getElementById('resetBtn').addEventListener('click', ()=>document.getElementById('resetModal').classList.add('show'));
-document.getElementById('undoBtn').addEventListener('click', undoLast);
-document.getElementById('toastUndo').onclick = function(){
-  if(!lastDeleted) return;
-  if(lastDeleted.queueBefore!==undefined){
-    const qb=[...lastDeleted.queueBefore];
-    const nextQ=qb[0];
-    if(nextQ){
-      const isRGH=lastDeleted.isRamschGH;
-      if(nextQ.type==='ramsch'&&!isRGH) qb.shift();
-      else if(nextQ.type==='bock') qb.shift();
-    }
-    state.queue=qb;
+  // Offene Runde: Stage 2 wiederherstellen
+  if(hasOpenRound()){
+    const r=state.rounds[openRoundIdx];
+    const sc=r.savedCalc||{};
+    calc={type:sc.type||'', farbeIdx:sc.farbeIdx||0, factor:sc.factor||2,
+      nullVal:sc.nullVal||23, jackCount:1, jackDir:'mit',
+      hand:sc.hand||false, schneider:false, schneiderA:sc.schneiderA||false,
+      schwarz:false, schwarzA:sc.schwarzA||false, ouvert:sc.ouvert||false,
+      spitze:false, spitzeA:sc.spitzeA||false,
+      kontra:false, re:false, bock:false, jungfrau:sc.jungfrau||false,
+      geschoben:sc.geschoben||0, verloren:false};
+    const suitType=sc.type==='farbe'?['karo','herz','pik','kreuz'][sc.farbeIdx||0]:sc.type;
+    setType(suitType||'');
+    showStage2();
+    updateCalcUI(); updatePlayerBtns(); updatePanelHeight();
   }
-  state.rounds.push(lastDeleted);
-  state.totals=[...lastDeleted.totals];
-  lastDeleted=null; save(); renderAll(); hideToast(); updateQueueUI();
-};
 
-updatePanelHeight();
-window.addEventListener('resize', updatePanelHeight);
+  // Event Listener
+  document.getElementById('resetBtn').addEventListener('click', ()=>document.getElementById('resetModal').classList.add('show'));
+  document.getElementById('undoBtn').addEventListener('click', undoLast);
+  document.getElementById('toastUndo').onclick = function(){
+    if(!lastDeleted) return;
+    if(lastDeleted.queueBefore!==undefined){
+      const qb=[...lastDeleted.queueBefore];
+      const nextQ=qb[0];
+      if(nextQ){
+        const isRGH=lastDeleted.isRamschGH;
+        if(nextQ.type==='ramsch'&&!isRGH) qb.shift();
+        else if(nextQ.type==='bock') qb.shift();
+      }
+      state.queue=qb;
+    }
+    state.rounds.push(lastDeleted);
+    state.totals=[...lastDeleted.totals];
+    lastDeleted=null; save(); renderAll(); hideToast(); updateQueueUI();
+  };
+
+  updatePanelHeight();
+  window.addEventListener('resize', updatePanelHeight);
+}
 
 // ===== SERVICE WORKER =====
 if('serviceWorker' in navigator){
