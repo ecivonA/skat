@@ -365,23 +365,24 @@
   @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
   
   /* ===== QUEUE BUTTONS (in skat.css einfügen) ===== */
-/* Queue-Buttons in der Tab-Leiste */
+/* Queue-Buttons im Header */
 .queue-btn {
   flex: 0 0 auto;
-  background: rgba(255,255,255,.04);
+  background: rgba(255,255,255,.07);
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: 7px;
   color: var(--muted);
   font-family: 'Source Code Pro', monospace;
-  font-size: 10px;
-  padding: 4px 6px;
+  font-size: 11px;
+  padding: 0 7px;
+  height: 32px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   transition: all .15s;
-  line-height: 1.2;
+  line-height: 1;
 }
 .queue-btn:active { transform: scale(.95); }
 .queue-btn.bock-active   { border-color: #e8b04b; background: rgba(232,176,75,.15); color: #e8b04b; }
@@ -407,6 +408,6 @@ tr.ghost-row.ghost-ramsch td { background: rgba(231,76,60,.04); }
   display: none;
 }
 /* Light theme overrides */
-html[data-theme="light"] .queue-btn { background: #f0f2f5; border-color: #c0c8d8; color: #555577; }
-html[data-theme="light"] .queue-btn.bock-active   { border-color: #1a3a8f; background: rgba(26,58,143,.12); color: #1a3a8f; }
-html[data-theme="light"] .queue-btn.ramsch-active { border-color: #8f1a1a; background: rgba(143,26,26,.10); color: #8f1a1a; }
+html[data-theme="light"] .queue-btn { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.4); color: #ffffff; }
+html[data-theme="light"] .queue-btn.bock-active   { border-color: #e8b04b; background: rgba(232,176,75,.3); color: #e8b04b; }
+html[data-theme="light"] .queue-btn.ramsch-active { border-color: #e74c3c; background: rgba(231,76,60,.3);  color: #e74c3c; }

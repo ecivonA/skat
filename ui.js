@@ -737,7 +737,7 @@ function renderTable(){
   const sepEvery=state.has4?4:3;
   document.getElementById('th3').style.display=state.has4?'':'none';
   table.style.display='table';
-  const hasTabs=state.rounds.length>0||(state.queue&&state.queue.length>0);
+  const hasTabs=state.rounds.length>0;
   document.getElementById('viewTabs').style.display=hasTabs?'flex':'none';
   document.getElementById('tableWrap').classList.toggle('no-tabs',!hasTabs);
   if(state.rounds.length===0){empty.style.display='block';tbody.innerHTML='';tfoot.innerHTML='';return;}
