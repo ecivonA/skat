@@ -183,13 +183,14 @@ function setType(tp){
 
   document.querySelectorAll('.type-btn').forEach(b=>b.classList.toggle('active', b.dataset.type===tp));
   const inStage2 = document.getElementById('stage2').style.display!=='none';
-  document.getElementById('detailRamsch').style.display = (tp==='ramsch') ? '' : 'none';
-  if(tp==='ramsch') document.getElementById('dJungfrau').style.display='';
+  // Ramsch-Details (Eingabe, Durch, Jungfrau, Geschoben) nur in Stage 2 – in Stage 1 ausblenden
+  document.getElementById('detailRamsch').style.display = 'none';
+  document.getElementById('calcRamsch').style.display   = 'none';
+  // Farbe/Grand/RGH Faktor-Stepper nur in Stage 2
   document.getElementById('calcFarbe').style.display  = (isSuit&&inStage2) ? '' : 'none';
   document.getElementById('calcGrand').style.display  = (tp==='grand'&&inStage2) ? '' : 'none';
   document.getElementById('calcRGH').style.display    = (tp==='rgh'&&inStage2) ? '' : 'none';
   document.getElementById('calcNull').style.display   = tp==='null' ? '' : 'none';
-  document.getElementById('calcRamsch').style.display = tp==='ramsch' ? '' : 'none';
   document.getElementById('calcLeer').style.display   = tp==='leer' ? '' : 'none';
   document.getElementById('stage1Ansagen').style.display = (isSuit||tp==='grand') ? '' : 'none';
 
@@ -197,8 +198,10 @@ function setType(tp){
   if(_s2 && _s2.style.display!=='none'){
     const _b=document.getElementById('stage2Buben'); if(_b) _b.style.display=(isSuit||tp==='grand'||tp==='rgh')?'':'none';
     const _e=document.getElementById('stage2Erreicht'); if(_e) _e.style.display=(isSuit||tp==='grand'||tp==='rgh')?'':'none';
+    // In Stage 2: Ramsch-Details anzeigen
+    const _cr=document.getElementById('calcRamsch'); if(_cr) _cr.style.display=tp==='ramsch'?'':'none';
     const _dr=document.getElementById('detailRamsch'); if(_dr) _dr.style.display=tp==='ramsch'?'':'none';
-    const _dn=document.getElementById('detailNormal'); if(_dn) _dn.style.display=(tp===''||tp==='ramsch'||tp==='leer')?'none':'';
+    const _dn=document.getElementById('detailNormal'); if(_dn) _dn.style.display=(tp===''||tp==='leer')?'none':'';
   }
   if(isSuit) document.getElementById('baseInfo').textContent =
     FARBEN_VALS[calc.farbeIdx]+'×'+calc.factor+'='+(FARBEN_VALS[calc.farbeIdx]*calc.factor);
