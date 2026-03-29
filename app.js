@@ -396,7 +396,6 @@ if('wakeLock' in navigator){
 
 // Alles rendern – nur wenn Skat-DOM vorhanden
 if(document.getElementById('inputPanel')){
-  try{
   buildNullBtns();
   buildJackRow();
   applyTranslations();
@@ -444,11 +443,6 @@ if(document.getElementById('inputPanel')){
 
   updatePanelHeight();
   window.addEventListener('resize', updatePanelHeight);
-  }catch(err){
-    document.body.insertAdjacentHTML('afterbegin',
-      '<div style="position:fixed;top:60px;left:0;right:0;background:#c00;color:#fff;padding:10px;z-index:9999;font-size:12px;font-family:monospace">'+
-      'INIT ERROR: '+err.message+'<br>'+err.stack.split('\n').slice(0,3).join('<br>')+'</div>');
-  }
 }
 
 // ===== SERVICE WORKER =====
