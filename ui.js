@@ -515,10 +515,21 @@ function showStage2(){
   document.getElementById('calcGrand').style.display=(calc.type==='grand')?'':'none';
   document.getElementById('calcRGH').style.display=isRGH?'':'none';
 
-  // Ramsch-Eingabe in Stage 2 anzeigen
-  document.getElementById('calcRamsch').style.display=isRamsch?'':'none';
-  document.getElementById('detailRamsch').style.display=isRamsch?'':'none';
-  if(isRamsch) document.getElementById('dJungfrau').style.display='';
+  // Ramsch-Eingabe in Stage 2 – explizit setzen
+  const crEl=document.getElementById('calcRamsch');
+  const drEl=document.getElementById('detailRamsch');
+  if(crEl){ crEl.style.display=isRamsch?'':'none'; crEl.style.visibility=''; }
+  if(drEl){ drEl.style.display=isRamsch?'':'none'; drEl.style.visibility=''; }
+  if(isRamsch){
+    const jf=document.getElementById('dJungfrau');
+    if(jf) jf.style.display='';
+    // Durch-Status zurücksetzen wenn nicht aktiv
+    const db=document.getElementById('ramschDurch');
+    if(db && !db.classList.contains('active')){
+      const ri=document.getElementById('ramschInput');
+      if(ri){ ri.disabled=false; ri.style.opacity=''; }
+    }
+  }
 
   // Verdoppelungen: immer außer bei Leer
   const showNormal=calc.type!==''&&calc.type!=='leer';
@@ -726,7 +737,7 @@ function renderTable(){
   const sepEvery=state.has4?4:3;
   document.getElementById('th3').style.display=state.has4?'':'none';
   table.style.display='table';
-  const hasTabs=state.rounds.length>0;
+  const hasTabs=state.rounds.length>0||(state.queue&&state.queue.length>0);
   document.getElementById('viewTabs').style.display=hasTabs?'flex':'none';
   document.getElementById('tableWrap').classList.toggle('no-tabs',!hasTabs);
   if(state.rounds.length===0){empty.style.display='block';tbody.innerHTML='';tfoot.innerHTML='';return;}
