@@ -12,6 +12,10 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<script src="ui.js"></script>
+<script src="lang.js"></script>
+<script src="calc.js"></script>
+<script src="app.js"></script>
 <div class="app">
   <header>
     <div class="logo"><span>♠</span> Skat</div>
@@ -179,29 +183,6 @@
         <span data-t="festWert"></span>: <span style="color:var(--accent);font-weight:700">120 <span data-t="punkte"></span></span>
       </div>
 
-      <!-- Ramsch -->
-      <div id="calcRamsch" style="display:none">
-        <div id="calcRamschInputRow" class="ramsch-row">
-          <button class="dbl-btn" id="ramschDurch" onclick="toggleRamschDurch()" style="font-size:10px;flex-shrink:0">👑 Durch</button>
-          <input class="ramsch-input" id="ramschInput" type="number" inputmode="numeric" placeholder="Pkt." min="0" oninput="updateCalcResult()">
-          <span style="font-size:9px;color:var(--muted);flex-shrink:0" data-t="verlierer"></span>
-        </div>
-      </div>
-
-      <!-- Ramsch extras (in Stage 1 sichtbar) -->
-      <div id="detailRamsch" style="display:none">
-        <div class="detail-section-label" data-t="ramschExtras"></div>
-        <div class="detail-opts" style="align-items:center;gap:8px">
-          <button class="dbl-btn" id="dJungfrau" onclick="toggleDbl('jungfrau')" data-t="jungfrau"></button>
-          <span style="font-size:10px;color:var(--muted);margin-left:4px" data-t="geschoben"></span>
-          <div class="stepper" style="margin:0">
-            <button onclick="stepGeschoben(-1)">−</button>
-            <span id="geschobenVal">0</span>
-            <button onclick="stepGeschoben(1)">+</button>
-          </div>
-        </div>
-      </div>
-
       <!-- Leerrunde -->
       <div id="calcLeer" style="display:none">
         <div style="font-size:10px;color:var(--muted);margin-bottom:5px;padding:2px 0;text-align:center" data-t="leerHint"></div>
@@ -245,6 +226,27 @@
         </div>
       </div>
 
+
+      <!-- Ramsch: Eingabe + Extras (nur in Stage 2 sichtbar) -->
+      <div id="calcRamsch" style="display:none">
+        <div id="calcRamschInputRow" class="ramsch-row">
+          <button class="dbl-btn" id="ramschDurch" onclick="toggleRamschDurch()" style="font-size:10px;flex-shrink:0">👑 Durch</button>
+          <input class="ramsch-input" id="ramschInput" type="number" inputmode="numeric" placeholder="Pkt." min="0" oninput="updateCalcResult()">
+          <span style="font-size:9px;color:var(--muted);flex-shrink:0" data-t="verlierer"></span>
+        </div>
+      </div>
+      <div id="detailRamsch" style="display:none">
+        <div class="detail-section-label" data-t="ramschExtras"></div>
+        <div class="detail-opts" style="align-items:center;gap:8px">
+          <button class="dbl-btn" id="dJungfrau" onclick="toggleDbl('jungfrau')" data-t="jungfrau"></button>
+          <span style="font-size:10px;color:var(--muted);margin-left:4px" data-t="geschoben"></span>
+          <div class="stepper" style="margin:0">
+            <button onclick="stepGeschoben(-1)">−</button>
+            <span id="geschobenVal">0</span>
+            <button onclick="stepGeschoben(1)">+</button>
+          </div>
+        </div>
+      </div>
 
       <!-- Verdopplungen -->
       <div id="detailNormal">
@@ -311,10 +313,5 @@
 </div>
 
 <div class="toast" id="toast"><span id="toastText"></span> <button id="toastUndo"></button></div>
-
-<script src="lang.js"></script>
-<script src="calc.js"></script>
-<script src="ui.js"></script>
-<script src="app.js"></script>
 </body>
 </html>
