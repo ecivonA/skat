@@ -1,5 +1,5 @@
 // Version hochzählen, wenn du CSS oder JS änderst!
-const CACHE = 'skat-v1.4'; 
+const CACHE = 'skat-v1.5'; 
 
 const FILES = [
   './',
