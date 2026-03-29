@@ -68,10 +68,23 @@ function queueTailIsBlock(tp){
 }
 
 function toggleQueueBlock(tp){
-  if(queueTailIsBlock(tp)){
-    state.queue.splice(state.queue.length-queueBlockSize(), queueBlockSize());
+  // Prüfe ob am Ende der Queue mindestens ein Slot des Typs liegt
+  // (unabhängig von der aktuellen Block-Größe, da sich has4 geändert haben kann)
+  const q = state.queue;
+  const trailingCount = (() => {
+    let c = 0;
+    for(let i = q.length-1; i >= 0; i--){
+      if(q[i].type === tp) c++; else break;
+    }
+    return c;
+  })();
+
+  if(trailingCount > 0){
+    // Vorhandene Trailing-Slots dieses Typs entfernen
+    state.queue.splice(q.length - trailingCount, trailingCount);
   } else {
-    const n=queueBlockSize();
+    // Neuen Block anhängen
+    const n = queueBlockSize();
     for(let i=0;i<n;i++) state.queue.push({type:tp});
   }
   save(); renderAll(); updateQueueUI();
@@ -144,11 +157,9 @@ function addRound(){
     openRoundIdx=-1;
     save();
   } else {
-    // Stage 1 direkt (Ramsch / Leer / RGH direkt eintragbar)
+    // Stage 1 direkt: nur noch Leer
     const isRamschGH=calc.type==='rgh';
     const isLeer=calc.type==='leer';
-    // calc.bock wurde bereits via updateCalcResult live gesetzt (siehe setType/updateCalcResult)
-    // Sicherheitshalber nochmal setzen falls nicht gesetzt
     if(!isLeer && !isRamschGH && currentQueueType()==='bock') calc.bock=true;
     const noPlayer=isLeer||selectedPlayers.length===0;
     const value=isLeer?0:(selectedPlayers.length>0?getFinalValue():0);

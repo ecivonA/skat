@@ -458,11 +458,10 @@ function updatePlayerBtns(){
     addBtn.style.opacity=addBtn.disabled?'0.35':'';
     vBtn.style.display='none';
   } else {
-    const isRamschDirect=calc.type==='ramsch';
-    if(isLeer||isRamschDirect){
+    // Stage 1: Leer direkt, alles andere über Vormerken
+    if(isLeer){
       addBtn.style.display='';
-      const canAdd=isLeer||selectedPlayers.length>0;
-      addBtn.disabled=!canAdd; addBtn.style.opacity=canAdd?'':'0.35';
+      addBtn.disabled=false; addBtn.style.opacity='';
       vBtn.style.display='none';
     } else {
       addBtn.style.display='none'; addBtn.disabled=true;
@@ -502,35 +501,47 @@ function showStage2(){
   const isFarbeGrand=calc.type==='farbe'||calc.type==='grand'||calc.type==='rgh';
   const isRamsch=calc.type==='ramsch';
   const isRGH=calc.type==='rgh';
+  const isBockRunde=typeof currentQueueType==='function' && currentQueueType()==='bock';
+
+  // Buben + Erreicht nur bei Farbe/Grand/RGH
   document.getElementById('stage2Buben').style.display=isFarbeGrand?'':'none';
   document.getElementById('stage2Erreicht').style.display=isFarbeGrand?'':'none';
-  // detailNormal (Kontra/Re/Bock/Verloren): bei Ramsch nur anzeigen wenn Bock-Runde
-  const isRamschBock = isRamsch && currentQueueType()==='bock';
-  document.getElementById('detailNormal').style.display=
-    (!isRamsch && calc.type!=='leer' && calc.type!=='') || isRamschBock ? '' : 'none';
-  // Bei Ramsch-Bock: Kontra und Re ausblenden, nur Bock und Verloren zeigen
-  if(isRamschBock){
-    document.getElementById('dKontra').style.display='none';
-    document.getElementById('dRe').style.display='none';
-  }
+
+  // Faktor-Stepper
   document.getElementById('calcFarbe').style.display=(calc.type==='farbe')?'':'none';
   document.getElementById('calcGrand').style.display=(calc.type==='grand')?'':'none';
   document.getElementById('calcRGH').style.display=isRGH?'':'none';
-  document.getElementById('dKontra').style.display=isRGH?'none':'';
-  document.getElementById('dRe').style.display=isRGH?'none':'';
-  document.getElementById('dBock').style.display=isRGH?'none':'';
+
+  // Ramsch-Eingabe in Stage 2 anzeigen
+  document.getElementById('calcRamsch').style.display=isRamsch?'':'none';
+  document.getElementById('detailRamsch').style.display=isRamsch?'':'none';
+  if(isRamsch) document.getElementById('dJungfrau').style.display='';
+
+  // Verdoppelungen: immer außer bei Leer
+  const showNormal=calc.type!==''&&calc.type!=='leer';
+  document.getElementById('detailNormal').style.display=showNormal?'':'none';
+
+  // Alle Stage-2-Buttons zurücksetzen
   ['dSchneider','dSchwarz','dSpitze','dKontra','dRe','dBock','dVerloren'].forEach(id=>{
     const el=document.getElementById(id);
     if(el){ el.classList.remove('active'); el.style.display=''; }
   });
+
+  // Kontra/Re bei RGH und Ramsch ausblenden; Bock bei RGH ausblenden
+  document.getElementById('dKontra').style.display=(isRGH||isRamsch)?'none':'';
+  document.getElementById('dRe').style.display=(isRGH||isRamsch)?'none':'';
+  document.getElementById('dBock').style.display=isRGH?'none':'';
+
   calc.schneider=false; calc.schwarz=false; calc.spitze=false;
   calc.kontra=false; calc.re=false; calc.bock=false; calc.verloren=false;
-  // Bock-Vorbelegung aus Queue (gilt für alle Spieltypen außer RGH)
-  if(!isRGH && currentQueueType()==='bock'){
+
+  // Bock-Vorbelegung aus Queue (alle Typen außer RGH)
+  if(!isRGH && isBockRunde){
     calc.bock=true;
     const bEl=document.getElementById('dBock');
-    if(bEl){ bEl.classList.add('active'); }
+    if(bEl) bEl.classList.add('active');
   }
+
   if(isFarbeGrand){
     const sA=calc.schneiderA, swA=calc.schwarzA;
     if(sA||swA){ calc.schneider=true; document.getElementById('dSchneider').classList.add('active'); }
@@ -692,7 +703,8 @@ function updateHeaders(){
     document.getElementById('pbtn'+i).style.display=show?'':'none';
   }
   const setup=document.getElementById('player4Setup');
-  if(state.rounds.length===0){
+  const queueActive=state.queue&&state.queue.length>0;
+  if(state.rounds.length===0&&!queueActive){
     if(!state.has4){
       setup.innerHTML=`<button onclick="add4thPlayer()" style="background:rgba(232,176,75,.15);border:1px dashed var(--accent);color:var(--accent);border-radius:8px;padding:8px 16px;font-family:'Source Code Pro',monospace;font-size:12px;cursor:pointer">+ ${t('vierterSpieler')}</button>`;
     } else {
