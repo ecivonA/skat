@@ -500,7 +500,15 @@ function showStage2(){
   const isRGH=calc.type==='rgh';
   document.getElementById('stage2Buben').style.display=isFarbeGrand?'':'none';
   document.getElementById('stage2Erreicht').style.display=isFarbeGrand?'':'none';
-  document.getElementById('detailNormal').style.display=(!isRamsch&&calc.type!=='leer'&&calc.type!=='')?'':'none';
+  // detailNormal (Kontra/Re/Bock/Verloren): bei Ramsch nur anzeigen wenn Bock-Runde
+  const isRamschBock = isRamsch && currentQueueType()==='bock';
+  document.getElementById('detailNormal').style.display=
+    (!isRamsch && calc.type!=='leer' && calc.type!=='') || isRamschBock ? '' : 'none';
+  // Bei Ramsch-Bock: Kontra und Re ausblenden, nur Bock und Verloren zeigen
+  if(isRamschBock){
+    document.getElementById('dKontra').style.display='none';
+    document.getElementById('dRe').style.display='none';
+  }
   document.getElementById('calcFarbe').style.display=(calc.type==='farbe')?'':'none';
   document.getElementById('calcGrand').style.display=(calc.type==='grand')?'':'none';
   document.getElementById('calcRGH').style.display=isRGH?'':'none';
@@ -513,6 +521,12 @@ function showStage2(){
   });
   calc.schneider=false; calc.schwarz=false; calc.spitze=false;
   calc.kontra=false; calc.re=false; calc.bock=false; calc.verloren=false;
+  // Bock-Vorbelegung aus Queue (gilt für alle Spieltypen außer RGH)
+  if(!isRGH && currentQueueType()==='bock'){
+    calc.bock=true;
+    const bEl=document.getElementById('dBock');
+    if(bEl){ bEl.classList.add('active'); }
+  }
   if(isFarbeGrand){
     const sA=calc.schneiderA, swA=calc.schwarzA;
     if(sA||swA){ calc.schneider=true; document.getElementById('dSchneider').classList.add('active'); }
