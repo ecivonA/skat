@@ -1,4 +1,8 @@
 // ===== TRANSLATIONS =====
+// lang wird hier initialisiert damit t() sofort funktioniert,
+// auch bevor app.js geladen wurde. app.js setzt lang nach load().
+var lang = 'de';
+
 const T = {
   de: {
     farbe:'Farbe', grand:'Grand', null:'Null', durch:'Durch.', ramsch:'Ramsch',

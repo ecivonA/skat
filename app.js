@@ -8,7 +8,7 @@ let moneySettings = { rate:0, currency:'€' };
 let openRoundIdx  = -1;
 let editRoundIdx  = -1;
 let selectedPlayers = [], sign = 1, lastDeleted = null, panelOpen = true, tableView = 'std';
-let lang = 'de';
+// Hinweis: lang wird in lang.js als var deklariert, hier nur neu zugewiesen
 
 let calc = {
   type:'', farbeIdx:0, factor:2, nullVal:23,
@@ -313,14 +313,16 @@ async function toggleWakeLock(){
 // ===== THEME =====
 function applyTheme(theme){
   const html=document.documentElement;
+  const themeBtn=document.getElementById('themeBtn');
+  const metaTheme=document.querySelector('meta[name="theme-color"]');
   if(theme==='light'){
     html.setAttribute('data-theme','light');
-    document.getElementById('themeBtn').textContent='🌙';
-    document.querySelector('meta[name="theme-color"]').content='#1a3a8f';
+    if(themeBtn) themeBtn.textContent='🌙';
+    if(metaTheme) metaTheme.content='#1a3a8f';
   } else {
     html.setAttribute('data-theme','dark');
-    document.getElementById('themeBtn').textContent='☀';
-    document.querySelector('meta[name="theme-color"]').content='#1a1a2e';
+    if(themeBtn) themeBtn.textContent='☀';
+    if(metaTheme) metaTheme.content='#1a1a2e';
   }
   try{ localStorage.setItem('skat_theme',theme); }catch(e){}
 }
