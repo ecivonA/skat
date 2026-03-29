@@ -1,6 +1,5 @@
 // ===== app.js =====
 // State, Persistenz, Queue-Logik, Runden-Verwaltung, Einstellungen, Theme, Init.
-// Wird als letztes geladen. Kennt alle anderen Module.
 // Ladereihenfolge: lang.js → calc.js → ui.js → app.js
 
 // ===== STATE & GLOBALS =====
@@ -17,6 +16,10 @@ let calc = {
   hand:false, schneider:false, schneiderA:false, schwarz:false, schwarzA:false, ouvert:false,
   kontra:false, re:false, bock:false, jungfrau:false, geschoben:0, verloren:false
 };
+
+// ===== ÜBERSETZUNG =====
+// t() muss als erstes definiert werden – wird von calc.js und ui.js genutzt
+function t(key){ return (T[lang]&&T[lang][key]) || T['de'][key] || key; }
 
 // ===== HILFSFUNKTIONEN =====
 function getAussetzer(){
@@ -78,10 +81,14 @@ function updateQueueUI(){
   const q=state.queue;
   const bockCount  =q.filter(x=>x.type==='bock').length;
   const ramschCount=q.filter(x=>x.type==='ramsch').length;
-  document.getElementById('queueBockCount').textContent  =bockCount;
-  document.getElementById('queueRamschCount').textContent=ramschCount;
-  document.getElementById('queueBockBtn').classList.toggle('bock-active',    bockCount>0);
-  document.getElementById('queueRamschBtn').classList.toggle('ramsch-active', ramschCount>0);
+  const bockEl  =document.getElementById('queueBockCount');
+  const ramschEl=document.getElementById('queueRamschCount');
+  if(bockEl)   bockEl.textContent  =bockCount;
+  if(ramschEl) ramschEl.textContent=ramschCount;
+  const bockBtn  =document.getElementById('queueBockBtn');
+  const ramschBtn=document.getElementById('queueRamschBtn');
+  if(bockBtn)   bockBtn.classList.toggle('bock-active',    bockCount>0);
+  if(ramschBtn) ramschBtn.classList.toggle('ramsch-active', ramschCount>0);
   const isRamschForced=q.length>0&&q[0].type==='ramsch';
   const hint=document.getElementById('ramschRestrictHint');
   if(hint) hint.style.display=isRamschForced?'':'none';
@@ -92,9 +99,11 @@ function applyQueueTypeRestriction(){
   const isRamschForced=state.queue.length>0&&state.queue[0].type==='ramsch';
   document.querySelectorAll('.type-btn').forEach(b=>{
     const tp=b.dataset.type;
-    const blocked=isRamschForced&&tp!=='ramsch'&&tp!=='rgh';
-    b.disabled=blocked;
-    b.style.opacity=blocked?'0.25':'';
+    if(editRoundIdx<0){
+      const blocked=isRamschForced&&tp!=='ramsch'&&tp!=='rgh';
+      b.disabled=blocked;
+      b.style.opacity=blocked?'0.25':'';
+    }
   });
 }
 
@@ -115,7 +124,6 @@ function addRound(){
     r.open=false; delete r.open;
     r.typeKey=getTypeKey()||(r.savedCalc?r.typeKey:'');
     r.label=getShortLabel()||r.label;
-    // Queue-Slot verbrauchen
     const queueBefore=r.queueBefore||[...state.queue];
     const nextQ=queueBefore[0];
     if(nextQ){
@@ -136,7 +144,7 @@ function addRound(){
     openRoundIdx=-1;
     save();
   } else {
-    // Stage 1 direkt (Ramsch/Leer)
+    // Stage 1 direkt (Ramsch / Leer / RGH direkt eintragbar)
     const isRamschGH=calc.type==='rgh';
     const isLeer=calc.type==='leer';
     const noPlayer=isLeer||selectedPlayers.length===0;
@@ -151,10 +159,18 @@ function addRound(){
     const nextQ=state.queue[0];
     let wasBock=false, wasRamsch=false;
     if(nextQ){
-      if(nextQ.type==='ramsch'){ const isRGH=calc.type==='rgh'; if(!isRGH) state.queue.shift(); wasRamsch=true; }
-      else if(nextQ.type==='bock'){ state.queue.shift(); wasBock=true; }
+      if(nextQ.type==='ramsch'){
+        if(!isRamschGH) state.queue.shift();
+        wasRamsch=true;
+      } else if(nextQ.type==='bock'){
+        state.queue.shift(); wasBock=true;
+      }
     }
-    state.rounds.push({players:isLeer?[]:[...selectedPlayers],value,label,typeKey,noPlayer,isRamschGH,aussetzer,totals:[...newTotals],queueBefore,wasBock,wasRamsch});
+    state.rounds.push({
+      players:isLeer?[]:[...selectedPlayers],
+      value, label, typeKey, noPlayer, isRamschGH, aussetzer,
+      totals:[...newTotals], queueBefore, wasBock, wasRamsch
+    });
     state.totals=newTotals; save();
   }
   openRoundIdx=-1;
@@ -223,8 +239,6 @@ function closeSettings(){ document.getElementById('settingsModal').classList.rem
 function closeSettingsOutside(e){ if(e.target.id==='settingsModal') closeSettings(); }
 
 // ===== SPRACHE =====
-function t(key){ return (T[lang]&&T[lang][key]) || T['de'][key] || key; }
-
 function toggleLangDropdown(e){
   e.stopPropagation();
   document.getElementById('langDropdown').classList.toggle('open');
@@ -234,7 +248,9 @@ function pickLang(l, e){
   document.getElementById('langDropdown').classList.remove('open');
   setLang(l);
 }
-document.addEventListener('click', ()=>{ const d=document.getElementById('langDropdown'); if(d) d.classList.remove('open'); });
+document.addEventListener('click', ()=>{
+  const d=document.getElementById('langDropdown'); if(d) d.classList.remove('open');
+});
 
 function setLang(l){
   lang=l; state.lang=l; save();
@@ -266,7 +282,7 @@ function applyTranslations(){
   updateSummaryBar(); updateHint();
 }
 
-// ===== FONT / WAKELOCK =====
+// ===== FONT =====
 function toggleFont(){
   const html=document.documentElement;
   const LEVELS=['zoom-2','zoom-3','zoom-4'];
@@ -279,6 +295,7 @@ function toggleFont(){
   try{ localStorage.setItem('skat_font',next); }catch(e){}
 }
 
+// ===== WAKELOCK =====
 let wakeLockSentinel=null;
 async function toggleWakeLock(){
   const btn=document.getElementById('wakeLockBtn');
@@ -292,7 +309,6 @@ async function toggleWakeLock(){
     }catch(e){}
   }
 }
-if('wakeLock' in navigator){ document.getElementById('wakeLockBtn').style.display=''; }
 
 // ===== THEME =====
 function applyTheme(theme){
@@ -311,6 +327,18 @@ function applyTheme(theme){
 function toggleTheme(){
   applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light');
 }
+
+// ===== INIT =====
+// Kritische Reihenfolge:
+// 1. State laden  →  2. lang setzen  →  3. Theme/Font  →  4. DOM befüllen
+
+load();
+loadSettings();
+
+// Lang aus gespeichertem State setzen – VOR jedem DOM-Render
+lang = state.lang || 'de';
+
+// Theme initialisieren
 (function(){
   let theme=null;
   try{ theme=localStorage.getItem('skat_theme'); }catch(e){}
@@ -321,10 +349,7 @@ function toggleTheme(){
   });
 })();
 
-// ===== INIT =====
-load();
-loadSettings();
-{ const idx=state.rounds.findIndex(r=>r.open===true); if(idx>=0) openRoundIdx=idx; }
+// Font initialisieren
 try{
   const fp=localStorage.getItem('skat_font');
   const labels={'zoom-2':'A','zoom-3':'A+','zoom-4':'A++'};
@@ -333,7 +358,21 @@ try{
   document.getElementById('fontBtn').textContent=labels[cls];
 }catch(e){ document.documentElement.classList.add('zoom-2'); }
 
-lang=state.lang||'de';
+// WakeLock
+if('wakeLock' in navigator){ document.getElementById('wakeLockBtn').style.display=''; }
+
+// Offene Runde aus State wiederherstellen
+{ const idx=state.rounds.findIndex(r=>r.open===true); if(idx>=0) openRoundIdx=idx; }
+
+// Sprach-UI initialisieren (Flag + aktive Option markieren)
+{
+  const flags={'de':'🇩🇪','en':'🇬🇧','fr':'🇫🇷','es':'🇪🇸','it':'🇮🇹','da':'🇩🇰','th':'🇹🇭','vi':'🇻🇳'};
+  document.getElementById('langFlag').textContent=flags[lang]||'🌐';
+  document.getElementById('langCode').textContent=lang.toUpperCase();
+  document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active',o.dataset.lang===lang));
+}
+
+// Alles rendern
 buildNullBtns();
 buildJackRow();
 applyTranslations();
@@ -342,7 +381,7 @@ updateCalcUI();
 updateQueueUI();
 document.getElementById('inputPanel').classList.add('open');
 
-// Offene Runde nach dem Laden wiederherstellen (Stage 2)
+// Offene Runde: Stage 2 wiederherstellen
 if(hasOpenRound()){
   const r=state.rounds[openRoundIdx];
   const sc=r.savedCalc||{};
@@ -364,7 +403,6 @@ document.getElementById('resetBtn').addEventListener('click', ()=>document.getEl
 document.getElementById('undoBtn').addEventListener('click', undoLast);
 document.getElementById('toastUndo').onclick = function(){
   if(!lastDeleted) return;
-  // Queue-Slot wieder verbrauchen (Undo des Undo)
   if(lastDeleted.queueBefore!==undefined){
     const qb=[...lastDeleted.queueBefore];
     const nextQ=qb[0];
