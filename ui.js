@@ -204,6 +204,10 @@ function setType(tp){
     FARBEN_VALS[calc.farbeIdx]+'×'+calc.factor+'='+(FARBEN_VALS[calc.farbeIdx]*calc.factor);
   updatePlayerBtns();
   buildJackRow();
+  // Bock aus Queue live vorbelegen (damit Anzeige stimmt)
+  if(calc.type !== '' && calc.type !== 'rgh' && typeof currentQueueType === 'function'){
+    if(currentQueueType() === 'bock') calc.bock = true;
+  }
   updateCalcResult(); updatePanelHeight();
 }
 

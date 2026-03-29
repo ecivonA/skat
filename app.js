@@ -147,8 +147,9 @@ function addRound(){
     // Stage 1 direkt (Ramsch / Leer / RGH direkt eintragbar)
     const isRamschGH=calc.type==='rgh';
     const isLeer=calc.type==='leer';
-    // Bock aus Queue vorbelegen bevor getFinalValue() gerechnet wird
-    if(!isLeer && currentQueueType()==='bock') calc.bock=true;
+    // calc.bock wurde bereits via updateCalcResult live gesetzt (siehe setType/updateCalcResult)
+    // Sicherheitshalber nochmal setzen falls nicht gesetzt
+    if(!isLeer && !isRamschGH && currentQueueType()==='bock') calc.bock=true;
     const noPlayer=isLeer||selectedPlayers.length===0;
     const value=isLeer?0:(selectedPlayers.length>0?getFinalValue():0);
     const label=isLeer?getShortLabel():(selectedPlayers.length>0?getShortLabel():'');
