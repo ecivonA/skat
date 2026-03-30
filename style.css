@@ -385,6 +385,13 @@
   line-height: 1;
 }
 .queue-btn:active { transform: scale(.95); }
+/* Queue-Buttons in der Tab-Leiste: kompakter */
+.tab-queue-btn {
+  font-size: 10px;
+  padding: 0 5px;
+  height: auto;
+  border-radius: 5px;
+}
 .queue-btn.bock-active   { border-color: #e8b04b; background: rgba(232,176,75,.15); color: #e8b04b; }
 .queue-btn.ramsch-active { border-color: #e74c3c; background: rgba(231,76,60,.15);  color: #e74c3c; }
 .queue-count {

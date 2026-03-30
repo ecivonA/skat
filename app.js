@@ -94,14 +94,38 @@ function updateQueueUI(){
   const q=state.queue;
   const bockCount  =q.filter(x=>x.type==='bock').length;
   const ramschCount=q.filter(x=>x.type==='ramsch').length;
-  const bockEl  =document.getElementById('queueBockCount');
-  const ramschEl=document.getElementById('queueRamschCount');
-  if(bockEl)   bockEl.textContent  =bockCount;
-  if(ramschEl) ramschEl.textContent=ramschCount;
-  const bockBtn  =document.getElementById('queueBockBtn');
-  const ramschBtn=document.getElementById('queueRamschBtn');
-  if(bockBtn)   bockBtn.classList.toggle('bock-active',    bockCount>0);
-  if(ramschBtn) ramschBtn.classList.toggle('ramsch-active', ramschCount>0);
+  const hasRounds=state.rounds.length>0;
+
+  // Header-Buttons (sichtbar wenn keine Runden)
+  const bockBtnH  =document.getElementById('queueBockBtn');
+  const ramschBtnH=document.getElementById('queueRamschBtn');
+  const bockCntH  =document.getElementById('queueBockCount');
+  const ramschCntH=document.getElementById('queueRamschCount');
+  if(bockBtnH){
+    bockBtnH.style.display   = hasRounds ? 'none' : '';
+    bockBtnH.classList.toggle('bock-active', bockCount>0);
+    if(bockCntH) bockCntH.textContent=bockCount;
+  }
+  if(ramschBtnH){
+    ramschBtnH.style.display   = hasRounds ? 'none' : '';
+    ramschBtnH.classList.toggle('ramsch-active', ramschCount>0);
+    if(ramschCntH) ramschCntH.textContent=ramschCount;
+  }
+
+  // Tab-Buttons (sichtbar wenn Runden vorhanden, in viewTabs)
+  const bockBtnT  =document.getElementById('queueBockBtnTab');
+  const ramschBtnT=document.getElementById('queueRamschBtnTab');
+  const bockCntT  =document.getElementById('queueBockCountTab');
+  const ramschCntT=document.getElementById('queueRamschCountTab');
+  if(bockBtnT){
+    bockBtnT.classList.toggle('bock-active', bockCount>0);
+    if(bockCntT) bockCntT.textContent=bockCount;
+  }
+  if(ramschBtnT){
+    ramschBtnT.classList.toggle('ramsch-active', ramschCount>0);
+    if(ramschCntT) ramschCntT.textContent=ramschCount;
+  }
+
   const isRamschForced=q.length>0&&q[0].type==='ramsch';
   const hint=document.getElementById('ramschRestrictHint');
   if(hint) hint.style.display=isRamschForced?'':'none';
