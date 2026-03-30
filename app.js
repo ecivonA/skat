@@ -88,15 +88,26 @@ function toggleQueueBlock(tp){
     for(let i=0;i<n;i++) state.queue.push({type:tp});
   }
   save(); renderAll(); updateQueueUI();
+  // Direkt zur Tabellenansicht springen wenn Queue aktiv und noch keine Runden
+  if(state.queue.length > 0 && state.rounds.length === 0){
+    const el=document.getElementById('emptyState');
+    const sc=document.getElementById('scoreTable');
+    const tw=document.getElementById('tableWrap');
+    if(el) el.style.display='none';
+    if(sc) sc.style.display='table';
+    if(tw) tw.classList.remove('no-tabs');
+  }
 }
 
 function updateQueueUI(){
   const q=state.queue;
   const bockCount  =q.filter(x=>x.type==='bock').length;
   const ramschCount=q.filter(x=>x.type==='ramsch').length;
-  const hasRounds=state.rounds.length>0;
+  // Header-Buttons sichtbar solange noch kein Spiel eingetragen wurde
+  // (auch während Vormerken/offener Runde unsichtbar wenn viewTabs schon sichtbar)
+  const hasRounds = state.rounds.filter(r=>!r.open).length > 0;
 
-  // Header-Buttons (sichtbar wenn keine Runden)
+  // Header-Buttons (sichtbar solange noch kein abgeschlossenes Spiel)
   const bockBtnH  =document.getElementById('queueBockBtn');
   const ramschBtnH=document.getElementById('queueRamschBtn');
   const bockCntH  =document.getElementById('queueBockCount');

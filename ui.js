@@ -45,6 +45,7 @@ function resetPanel(){
   document.getElementById('signBtn').textContent='+';
   document.getElementById('signBtn').className='sign-btn positive';
   document.querySelectorAll('.opt-btn,.dbl-btn').forEach(b=>b.classList.remove('active','implied'));
+  const rbb=document.getElementById('ramschBockBar'); if(rbb) rbb.style.display='none';
   document.getElementById('stage1').style.display='';
   document.getElementById('stage2').style.display='none';
   document.getElementById('stage1Ansagen').style.display='none';
@@ -183,9 +184,13 @@ function setType(tp){
 
   document.querySelectorAll('.type-btn').forEach(b=>b.classList.toggle('active', b.dataset.type===tp));
   const inStage2 = document.getElementById('stage2').style.display!=='none';
-  // Ramsch-Details (Eingabe, Durch, Jungfrau, Geschoben) nur in Stage 2 – in Stage 1 ausblenden
-  document.getElementById('detailRamsch').style.display = 'none';
-  document.getElementById('calcRamsch').style.display   = 'none';
+  // Ramsch-Details in Stage 1 sichtbar (Eingabe, Durch, Jungfrau, Geschoben + Bock)
+  document.getElementById('detailRamsch').style.display = (tp==='ramsch') ? '' : 'none';
+  document.getElementById('calcRamsch').style.display   = (tp==='ramsch') ? '' : 'none';
+  if(tp==='ramsch') document.getElementById('dJungfrau').style.display='';
+  // Bock-Button in Stage 1 bei Ramsch zeigen wenn Bock-Runde aktiv
+  const ramschBockBar = document.getElementById('ramschBockBar');
+  if(ramschBockBar) ramschBockBar.style.display = (tp==='ramsch') ? '' : 'none';
   // Farbe/Grand/RGH Faktor-Stepper nur in Stage 2
   document.getElementById('calcFarbe').style.display  = (isSuit&&inStage2) ? '' : 'none';
   document.getElementById('calcGrand').style.display  = (tp==='grand'&&inStage2) ? '' : 'none';
@@ -209,7 +214,14 @@ function setType(tp){
   buildJackRow();
   // Bock aus Queue live vorbelegen (damit Anzeige stimmt)
   if(calc.type !== '' && calc.type !== 'rgh' && typeof currentQueueType === 'function'){
-    if(currentQueueType() === 'bock') calc.bock = true;
+    if(currentQueueType() === 'bock'){
+      calc.bock = true;
+      // dBock (Stage2) und dBockRamsch (Stage1) aktiv setzen
+      ['dBock','dBockRamsch'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.classList.add('active');
+      });
+    }
   }
   updateCalcResult(); updatePanelHeight();
 }
@@ -299,7 +311,12 @@ function toggleOpt(key){
 
 function toggleDbl(key){
   calc[key]=!calc[key];
-  document.getElementById('d'+key.charAt(0).toUpperCase()+key.slice(1)).classList.toggle('active', calc[key]);
+  // Update alle Buttons mit diesem key (es kann mehrere geben z.B. dBock + dBockRamsch)
+  ['d'+key.charAt(0).toUpperCase()+key.slice(1),
+   'd'+key.charAt(0).toUpperCase()+key.slice(1)+'Ramsch'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.classList.toggle('active', calc[key]);
+  });
   if(key==='verloren' && calc[key] && sign>0){
     sign=-1;
     const b=document.getElementById('signBtn');
@@ -461,10 +478,12 @@ function updatePlayerBtns(){
     addBtn.style.opacity=addBtn.disabled?'0.35':'';
     vBtn.style.display='none';
   } else {
-    // Stage 1: Leer direkt, alles andere über Vormerken
-    if(isLeer){
+    // Stage 1: Leer und Ramsch direkt eintragbar, alles andere über Vormerken
+    const isRamschDirect = calc.type==='ramsch';
+    if(isLeer || isRamschDirect){
       addBtn.style.display='';
-      addBtn.disabled=false; addBtn.style.opacity='';
+      const canAdd = isLeer || selectedPlayers.length>0;
+      addBtn.disabled=!canAdd; addBtn.style.opacity=canAdd?'':'0.35';
       vBtn.style.display='none';
     } else {
       addBtn.style.display='none'; addBtn.disabled=true;
@@ -515,24 +534,14 @@ function showStage2(){
   document.getElementById('calcGrand').style.display=(calc.type==='grand')?'':'none';
   document.getElementById('calcRGH').style.display=isRGH?'':'none';
 
-  // Ramsch-Eingabe in Stage 2 – explizit setzen
+  // Ramsch läuft in Stage 1 – in Stage 2 nicht anzeigen
   const crEl=document.getElementById('calcRamsch');
   const drEl=document.getElementById('detailRamsch');
-  if(crEl){ crEl.style.display=isRamsch?'':'none'; crEl.style.visibility=''; }
-  if(drEl){ drEl.style.display=isRamsch?'':'none'; drEl.style.visibility=''; }
-  if(isRamsch){
-    const jf=document.getElementById('dJungfrau');
-    if(jf) jf.style.display='';
-    // Durch-Status zurücksetzen wenn nicht aktiv
-    const db=document.getElementById('ramschDurch');
-    if(db && !db.classList.contains('active')){
-      const ri=document.getElementById('ramschInput');
-      if(ri){ ri.disabled=false; ri.style.opacity=''; }
-    }
-  }
+  if(crEl) crEl.style.display='none';
+  if(drEl) drEl.style.display='none';
 
-  // Verdoppelungen: immer außer bei Leer
-  const showNormal=calc.type!==''&&calc.type!=='leer';
+  // Verdoppelungen: bei Farbe/Grand/Null/RGH – nicht bei Ramsch (der ist in Stage 1)
+  const showNormal=calc.type!==''&&calc.type!=='leer'&&calc.type!=='ramsch';
   document.getElementById('detailNormal').style.display=showNormal?'':'none';
 
   // Alle Stage-2-Buttons zurücksetzen
