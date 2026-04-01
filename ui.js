@@ -749,8 +749,25 @@ function renderTable(){
   const hasTabs=state.rounds.length>0;
   document.getElementById('viewTabs').style.display=hasTabs?'flex':'none';
   document.getElementById('tableWrap').classList.toggle('no-tabs',!hasTabs);
-  if(state.rounds.length===0){empty.style.display='block';tbody.innerHTML='';tfoot.innerHTML='';return;}
+  const hasQueue=state.queue&&state.queue.length>0;
+  if(state.rounds.length===0&&!hasQueue){
+    empty.style.display='block';tbody.innerHTML='';tfoot.innerHTML='';return;
+  }
   empty.style.display='none'; tbody.innerHTML='';
+  // Wenn nur Queue, kein tfoot
+  if(state.rounds.length===0&&hasQueue){
+    state.queue.forEach((slot,qi)=>{
+      const isBock=slot.type==='bock';
+      const ghost=document.createElement('tr');
+      ghost.className='ghost-row '+(isBock?'ghost-bock':'ghost-ramsch');
+      let gc=`<td style="color:var(--muted);font-size:9px">${qi+1}</td>`;
+      for(let i=0;i<n;i++) gc+=`<td><span style="color:var(--border)">·</span></td>`;
+      gc+=`<td></td><td><span class="game-type-tag">${isBock?'🔔':'💀'}</span></td>`;
+      ghost.innerHTML=gc; tbody.appendChild(ghost);
+    });
+    tfoot.innerHTML='';
+    return;
+  }
   let regCount=0;
   const runSF=new Array(n).fill(0), runBL=new Array(n).fill(0);
   state.rounds.forEach((r,idx)=>{
