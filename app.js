@@ -103,9 +103,8 @@ function updateQueueUI(){
   const q=state.queue;
   const bockCount  =q.filter(x=>x.type==='bock').length;
   const ramschCount=q.filter(x=>x.type==='ramsch').length;
-  // Header-Buttons sichtbar solange noch kein Spiel eingetragen wurde
-  // (auch während Vormerken/offener Runde unsichtbar wenn viewTabs schon sichtbar)
-  const hasRounds = state.rounds.filter(r=>!r.open).length > 0;
+  // Header-Buttons weg sobald erste Runde existiert (offen oder abgeschlossen)
+  const hasRounds = state.rounds.length > 0;
 
   // Header-Buttons (sichtbar solange noch kein abgeschlossenes Spiel)
   const bockBtnH  =document.getElementById('queueBockBtn');
