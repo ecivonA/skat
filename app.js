@@ -68,9 +68,14 @@ function queueTailIsBlock(tp){
 }
 
 function toggleQueueBlock(tp){
-  // Prüfe ob am Ende der Queue mindestens ein Slot des Typs liegt
-  // (unabhängig von der aktuellen Block-Größe, da sich has4 geändert haben kann)
   const q = state.queue;
+
+  // Prüfe ob bereits ein Spiel dieses Typs gespielt wurde
+  const alreadyPlayed = state.rounds.some(r =>
+    (tp==='bock' && r.wasBock) || (tp==='ramsch' && r.wasRamsch)
+  );
+
+  // Trailing Slots dieses Typs am Ende der Queue
   const trailingCount = (() => {
     let c = 0;
     for(let i = q.length-1; i >= 0; i--){
@@ -79,11 +84,11 @@ function toggleQueueBlock(tp){
     return c;
   })();
 
-  if(trailingCount > 0){
-    // Vorhandene Trailing-Slots dieses Typs entfernen
+  if(trailingCount > 0 && !alreadyPlayed){
+    // Rücknahme nur möglich wenn noch kein Spiel dieses Typs gespielt wurde
     state.queue.splice(q.length - trailingCount, trailingCount);
   } else {
-    // Neuen Block anhängen
+    // Neuen Block anhängen (immer möglich)
     const n = queueBlockSize();
     for(let i=0;i<n;i++) state.queue.push({type:tp});
   }

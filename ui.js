@@ -667,6 +667,7 @@ function vormerken(){
   refreshJackRow(); buildNullBtns();
   showStage2();
   updateCalcUI(); updatePlayerBtns(); updatePanelHeight();
+  if(typeof updateQueueUI==='function') updateQueueUI();
 }
 
 function openRoundForEdit(idx){
