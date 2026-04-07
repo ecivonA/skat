@@ -69,11 +69,7 @@ function queueTailIsBlock(tp){
 
 function toggleQueueBlock(tp){
   const q = state.queue;
-
-  // Prüfe ob bereits ein Spiel dieses Typs gespielt wurde
-  const alreadyPlayed = state.rounds.some(r =>
-    (tp==='bock' && r.wasBock) || (tp==='ramsch' && r.wasRamsch)
-  );
+  const n = queueBlockSize();
 
   // Trailing Slots dieses Typs am Ende der Queue
   const trailingCount = (() => {
@@ -84,13 +80,13 @@ function toggleQueueBlock(tp){
     return c;
   })();
 
-  if(trailingCount > 0 && !alreadyPlayed){
-    // Rücknahme nur möglich wenn noch kein Spiel dieses Typs gespielt wurde
-    state.queue.splice(q.length - trailingCount, trailingCount);
+  if(trailingCount >= n){
+    // Es liegt mindestens ein vollständiger Block am Ende → entfernen
+    state.queue.splice(q.length - n, n);
   } else {
-    // Neuen Block anhängen (immer möglich)
-    const n = queueBlockSize();
-    for(let i=0;i<n;i++) state.queue.push({type:tp});
+    // Keinen oder unvollständigen Block am Ende → neuen Block anhängen
+    const n2 = queueBlockSize();
+    for(let i=0;i<n2;i++) state.queue.push({type:tp});
   }
   save(); renderAll(); updateQueueUI();
   // Direkt zur Tabellenansicht springen wenn Queue aktiv und noch keine Runden
