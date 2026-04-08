@@ -12,6 +12,7 @@ let selectedPlayers = [], sign = 1, lastDeleted = null, panelOpen = true, tableV
 
 let calc = {
   type:'', farbeIdx:0, factor:2, nullVal:23,
+  nullHand:false, nullOuvert:false, nullRevol:false,
   jackCount:1, jackDir:'mit',
   hand:false, schneider:false, schneiderA:false, schwarz:false, schwarzA:false, ouvert:false,
   kontra:false, re:false, bock:false, jungfrau:false, geschoben:0, verloren:false
@@ -349,17 +350,12 @@ let wakeLockSentinel=null;
 async function toggleWakeLock(){
   const btn=document.getElementById('wakeLockBtn');
   if(wakeLockSentinel){
-    await wakeLockSentinel.release(); wakeLockSentinel=null;
-    btn.style.opacity='0.4'; btn.style.background=''; btn.style.borderColor=''; btn.style.color='';
+    await wakeLockSentinel.release(); wakeLockSentinel=null; btn.style.opacity='0.4';
   } else {
     try{
       wakeLockSentinel=await navigator.wakeLock.request('screen');
-      btn.style.opacity='1'; btn.style.background='rgba(46,204,113,.25)';
-      btn.style.borderColor='var(--green)'; btn.style.color='var(--green)';
-      wakeLockSentinel.addEventListener('release',()=>{
-        wakeLockSentinel=null;
-        btn.style.opacity='0.4'; btn.style.background=''; btn.style.borderColor=''; btn.style.color='';
-      });
+      btn.style.opacity='1';
+      wakeLockSentinel.addEventListener('release',()=>{ wakeLockSentinel=null; btn.style.opacity='0.4'; });
     }catch(e){}
   }
 }

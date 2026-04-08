@@ -29,9 +29,9 @@
           <div class="lang-option" data-lang="vi" onclick="pickLang('vi',event)">🇻🇳 VI</div>
         </div>
       </div>
-      <button class="btn-icon" id="themeBtn" onclick="toggleTheme()" title="Theme wechseln">◐</button>
-      <button class="btn-icon" id="settingsBtn" onclick="openSettings()" title="Geldanzeige">$</button>
-      <button class="btn-icon" id="wakeLockBtn" onclick="toggleWakeLock()" title="Bildschirm wach halten" style="display:none;opacity:0.4">🔒</button>
+      <button class="btn-icon" id="themeBtn" onclick="toggleTheme()" title="Theme wechseln">☀</button>
+      <button class="btn-icon" id="settingsBtn" onclick="openSettings()" title="Einstellungen">⚙</button>
+      <button class="btn-icon" id="wakeLockBtn" onclick="toggleWakeLock()" title="Bildschirm wach halten" style="display:none;opacity:0.4">☀</button>
       <button class="btn-icon" id="fontBtn" onclick="toggleFont()" title="Schriftgröße">A</button>
       <button class="btn-icon" id="undoBtn" style="display:none">↩</button>
       <button class="btn-icon" id="resetBtn">🗑</button>
@@ -182,11 +182,11 @@
       <div id="stage1Ansagen" style="display:none">
         <div class="detail-section-label" data-t="zusaetze"></div>
         <div class="detail-opts">
-          <button class="opt-btn" id="dHand"       onclick="toggleOpt('hand')"       data-t="hand"></button>
-          <button class="opt-btn" id="dSchneiderA" onclick="toggleOpt('schneiderA')" data-t="schneiderA"></button>
-          <button class="opt-btn" id="dSchwarzA"   onclick="toggleOpt('schwarzA')"   data-t="schwarzA"></button>
-          <button class="opt-btn" id="dOuvert"     onclick="toggleOpt('ouvert')"     data-t="ouvert"></button>
-          <button class="opt-btn" id="dSpitzeA"    onclick="toggleOpt('spitzeA')"    data-t="spitzeA"></button>
+          <button class="opt-btn" id="dHand"       onclick="toggleOpt('hand')"       >✋ Hand></button>
+          <button class="opt-btn" id="dSchneiderA" onclick="toggleOpt('schneiderA')" >✂️! Schneider></button>
+          <button class="opt-btn" id="dSchwarzA"   onclick="toggleOpt('schwarzA')"   >🚫! Schwarz></button>
+          <button class="opt-btn" id="dOuvert"     onclick="toggleOpt('ouvert')"     >👁 Ouvert></button>
+          <button class="opt-btn" id="dSpitzeA"    onclick="toggleOpt('spitzeA')"    >🎯! Spitze></button>
         </div>
       </div>
       <!-- Ramsch: Eingabe + Extras (Stage 1) -->
@@ -200,7 +200,7 @@
       <div id="detailRamsch" style="display:none">
         <div class="detail-section-label" data-t="ramschExtras"></div>
         <div class="detail-opts" style="align-items:center;gap:8px">
-          <button class="dbl-btn" id="dJungfrau" onclick="toggleDbl('jungfrau')" data-t="jungfrau"></button>
+          <button class="dbl-btn" id="dJungfrau" onclick="toggleDbl('jungfrau')" >🧜 Jungfrau></button>
           <span style="font-size:10px;color:var(--muted);margin-left:4px" data-t="geschoben"></span>
           <div class="stepper" style="margin:0">
             <button onclick="stepGeschoben(-1)">−</button>
@@ -213,7 +213,7 @@
       <div id="ramschBockBar" style="display:none">
         <div class="detail-section-label" data-t="verdoppelungen"></div>
         <div class="detail-opts" style="align-items:center">
-          <button class="dbl-btn" id="dBockRamsch" onclick="toggleDbl('bock')" data-t="bock"></button>
+          <button class="dbl-btn" id="dBockRamsch" onclick="toggleDbl('bock')" >🔔 Bock></button>
         </div>
       </div>
     </div>
@@ -237,9 +237,9 @@
       <div id="stage2Erreicht" style="display:none">
         <div class="detail-section-label" data-t="zusaetze"></div>
         <div class="detail-opts">
-          <button class="opt-btn" id="dSchneider"  onclick="toggleOpt('schneider')"  data-t="schneider"></button>
-          <button class="opt-btn" id="dSchwarz"    onclick="toggleOpt('schwarz')"    data-t="schwarz"></button>
-          <button class="opt-btn" id="dSpitze"     onclick="toggleOpt('spitze')"     data-t="spitze"></button>
+          <button class="opt-btn" id="dSchneider"  onclick="toggleOpt('schneider')"  >✂️ Schneider></button>
+          <button class="opt-btn" id="dSchwarz"    onclick="toggleOpt('schwarz')"    >🚫 Schwarz></button>
+          <button class="opt-btn" id="dSpitze"     onclick="toggleOpt('spitze')"     >🎯 Spitze></button>
         </div>
       </div>
 
@@ -248,11 +248,11 @@
       <div id="detailNormal">
         <div class="detail-section-label" data-t="verdoppelungen"></div>
         <div class="detail-opts" style="align-items:center">
-          <button class="dbl-btn" id="dKontra"   onclick="toggleDbl('kontra')"   data-t="kontra"></button>
-          <button class="dbl-btn" id="dRe"       onclick="toggleDbl('re')"       data-t="re"></button>
-          <button class="dbl-btn" id="dBock"     onclick="toggleDbl('bock')"     data-t="bock"></button>
+          <button class="dbl-btn" id="dKontra"   onclick="toggleDbl('kontra')"   >⚡ Kontra></button>
+          <button class="dbl-btn" id="dRe"       onclick="toggleDbl('re')"       >⚡⚡ Re></button>
+          <button class="dbl-btn" id="dBock"     onclick="toggleDbl('bock')"     >🔔 Bock></button>
           <span style="width:16px"></span>
-          <button class="dbl-btn" id="dVerloren" onclick="toggleDbl('verloren')" data-t="verlorenX2"></button>
+          <button class="dbl-btn" id="dVerloren" onclick="toggleDbl('verloren')" >✕ Verloren ×2></button>
         </div>
       </div>
     </div>

@@ -34,12 +34,16 @@ function togglePanel(){
 // ===== PANEL RESET =====
 function resetPanel(){
   selectedPlayers=[]; sign=1;
-  calc={type:'',farbeIdx:0,factor:2,nullVal:23,jackCount:1,jackDir:'mit',
+  calc={type:'',farbeIdx:0,factor:2,nullVal:23,
+    nullHand:false,nullOuvert:false,nullRevol:false,
+    jackCount:1,jackDir:'mit',
     hand:false,schneider:false,schneiderA:false,schwarz:false,schwarzA:false,ouvert:false,
     spitze:false,spitzeA:false,kontra:false,re:false,bock:false,jungfrau:false,geschoben:0,verloren:false};
   const ri=document.getElementById('ramschInput');
   ri.value=''; ri.disabled=false; ri.style.opacity='';
   document.getElementById('geschobenVal').textContent='0';
+  document.getElementById('geschobenVal').style.cssText='';
+  renderGeschobenPips();
   document.getElementById('ramschDurch').classList.remove('active');
   document.getElementById('calcRamschInputRow').style.display='';
   document.getElementById('signBtn').textContent='+';
@@ -69,28 +73,57 @@ function updateStageUI(stage){
 
 // ===== NULL-BUTTONS =====
 function buildNullBtns(){
-  const nullVals = [
-    {v:23,key:'null'}, {v:35,key:'nullHand'}, {v:46,key:'nullOuvert'},
-    {v:59,key:'nullOuvertHand'}, {v:92,key:'revolution'},
-  ];
-  const nullLabels = {
-    de:['Null (23)','Null Hand (35)','Null Ouvert (46)','N. Ouvert Hand (59)','Revolution (92)'],
-    en:['Null (23)','Null Hand (35)','Null Ouvert (46)','N. Ouvert Hand (59)','Revolution (92)'],
-    fr:['Null (23)','Null Main (35)','Null Ouvert (46)','N. Ouvert Main (59)','Révolution (92)'],
-    es:['Null (23)','Null Mano (35)','Null Ouvert (46)','N. Ouvert Mano (59)','Revolución (92)'],
-    it:['Null (23)','Null Mano (35)','Null Ouvert (46)','N. Ouvert Mano (59)','Rivoluzione (92)'],
-  };
   const container = document.getElementById('nullBtns');
   container.innerHTML = '';
-  (nullLabels[lang] || nullLabels.de).forEach((label, i) => {
-    const v = nullVals[i].v;
+  const variants = [
+    { id:'nullBtnHand',  emoji:'✋', label:'Hand',       variant:'hand'       },
+    { id:'nullBtnOuvert',emoji:'👁', label:'Ouvert',     variant:'ouvert'     },
+    { id:'nullBtnRevol', emoji:'🌀', label:'Revolution', variant:'revolution' },
+  ];
+  variants.forEach(v => {
     const b = document.createElement('button');
-    b.className = 'null-btn' + (calc.nullVal===v ? ' active' : '');
-    b.setAttribute('data-null', v);
-    b.textContent = label;
-    b.onclick = () => setNullType(b, v);
+    b.className = 'null-btn';
+    b.id = v.id;
+    b.innerHTML = `<span style="font-size:14px;line-height:1">${v.emoji}</span><span style="font-size:9px;margin-left:4px">${v.label}</span>`;
+    b.style.cssText = 'display:flex;align-items:center;padding:5px 8px';
+    b.onclick = () => toggleNullVariant(v.variant);
     container.appendChild(b);
   });
+  refreshNullBtns();
+}
+
+function nullValFromState(){
+  if(calc.nullRevol) return 92;
+  if(calc.nullHand && calc.nullOuvert) return 59;
+  if(calc.nullOuvert) return 46;
+  if(calc.nullHand) return 35;
+  return 23;
+}
+
+function toggleNullVariant(variant){
+  if(variant === 'revolution'){
+    calc.nullRevol = !calc.nullRevol;
+    if(calc.nullRevol){ calc.nullHand = true; calc.nullOuvert = true; }
+  } else if(variant === 'ouvert'){
+    calc.nullOuvert = !calc.nullOuvert;
+    if(!calc.nullOuvert) calc.nullRevol = false;
+  } else if(variant === 'hand'){
+    calc.nullHand = !calc.nullHand;
+    if(!calc.nullHand) calc.nullRevol = false;
+  }
+  calc.nullVal = nullValFromState();
+  refreshNullBtns();
+  updateCalcResult();
+}
+
+function refreshNullBtns(){
+  const hBtn = document.getElementById('nullBtnHand');
+  const oBtn = document.getElementById('nullBtnOuvert');
+  const rBtn = document.getElementById('nullBtnRevol');
+  if(!hBtn) return;
+  hBtn.classList.toggle('active', calc.nullHand || calc.nullRevol);
+  oBtn.classList.toggle('active', calc.nullOuvert || calc.nullRevol);
+  rBtn.classList.toggle('active', !!calc.nullRevol);
 }
 
 // ===== JACK ROW =====
@@ -234,8 +267,32 @@ function setFarbe(i){
 
 function stepGeschoben(d){
   calc.geschoben = Math.max(0, Math.min(3, calc.geschoben+d));
-  document.getElementById('geschobenVal').textContent = calc.geschoben;
+  renderGeschobenPips();
   updateCalcResult();
+}
+
+function renderGeschobenPips(){
+  const el = document.getElementById('geschobenVal');
+  if(!el) return;
+  const n = calc.geschoben;
+  if(n === 0){ el.textContent = '0'; el.style.cssText=''; return; }
+  // Überlappende verdeckte Karten als Pips
+  let html = '<span style="position:relative;display:inline-flex;height:28px;align-items:center">';
+  for(let i=0;i<n;i++){
+    html += `<span style="
+      position:${i===0?'relative':'absolute'};
+      left:${i*10}px;
+      display:inline-flex;align-items:center;justify-content:center;
+      width:20px;height:28px;border-radius:3px;
+      border:1px solid rgba(96,165,250,.5);
+      background:linear-gradient(135deg,#1a2a4a,#0d1a2e);
+      color:rgba(96,165,250,.4);font-size:8px;font-weight:700;
+      box-shadow:1px 1px 3px rgba(0,0,0,.5);
+    ">🂠</span>`;
+  }
+  html += '</span>';
+  el.style.cssText = 'min-width:'+(12+n*10)+'px';
+  el.innerHTML = html;
 }
 
 function stepFactor(d){
@@ -245,12 +302,7 @@ function stepFactor(d){
   updateCalcResult();
 }
 
-function setNullType(btn, v){
-  calc.nullVal=v;
-  document.querySelectorAll('.null-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  updateCalcResult();
-}
+// setNullType replaced by toggleNullVariant
 
 // ===== ANSAGEN-UI =====
 function updateAnsagenUI(){

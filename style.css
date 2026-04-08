@@ -177,7 +177,6 @@
   .logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--accent);display:flex;align-items:center;gap:7px}
   .header-actions{display:flex;gap:6px;align-items:center}
   .btn-icon{background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:7px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
-  #settingsBtn{font-size:16px;font-weight:700;}
   .btn-icon:active{transform:scale(.9)}
 
   /* Language selector */
@@ -289,6 +288,7 @@
   .null-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px}
   .null-btn{background:rgba(255,255,255,.04);border:2px solid var(--border);border-radius:6px;color:var(--muted);font-family:'Source Code Pro',monospace;font-size:10px;padding:4px 7px;cursor:pointer;transition:all .15s}
   .null-btn.active{border-color:var(--accent);background:rgba(232,176,75,.15);color:var(--accent)}
+  .null-btn.implied{border-color:rgba(232,176,75,.4);background:rgba(232,176,75,.07);color:var(--accent);opacity:.7}
 
   /* Details */
   .details-toggle{background:none;border:none;color:var(--muted);font-size:9px;cursor:pointer;padding:0;margin-bottom:4px;display:flex;align-items:center;gap:3px;font-family:'Source Code Pro',monospace}
