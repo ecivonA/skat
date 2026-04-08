@@ -20,23 +20,26 @@ function isDurchActive(){
 }
 
 // ===== NULL-LABELS =====
-// nullVal: 23=plain, 35=hand, 46=ouvert, 59=ouvert+hand, 92=revolution
 function nullHand(v)   { return v===35||v===59||v===92; }
 function nullOuvert(v) { return v===46||v===59||v===92; }
 function nullRevol(v)  { return v===92; }
 
 function nullLabel(v){
-  if(v===92) return '∅ 🌀 Revolution';
+  // Always show "Null" as base, append variant symbols
   let s = '∅ Null';
-  if(nullOuvert(v)) s += ' 👁';
-  if(nullHand(v))   s += ' ✋';
+  if(nullRevol(v))       s += ' 🌀';
+  else {
+    if(nullOuvert(v))    s += ' 👁';
+    if(nullHand(v))      s += ' ✋';
+  }
   return s;
 }
 function nullLabelShort(v){
-  if(v===92) return '∅🌀';
-  let s = '∅';
-  if(nullOuvert(v)) s += '👁';
-  if(nullHand(v))   s += '✋';
+  // Table column: always show "Null" so it's readable
+  if(nullRevol(v)) return '∅ Null 🌀';
+  let s = '∅ Null';
+  if(nullOuvert(v)) s += ' 👁';
+  if(nullHand(v))   s += ' ✋';
   return s;
 }
 

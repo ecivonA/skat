@@ -288,7 +288,6 @@
   .null-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px}
   .null-btn{background:rgba(255,255,255,.04);border:2px solid var(--border);border-radius:6px;color:var(--muted);font-family:'Source Code Pro',monospace;font-size:10px;padding:4px 7px;cursor:pointer;transition:all .15s}
   .null-btn.active{border-color:var(--accent);background:rgba(232,176,75,.15);color:var(--accent)}
-  .null-btn.implied{border-color:rgba(232,176,75,.4);background:rgba(232,176,75,.07);color:var(--accent);opacity:.7}
 
   /* Details */
   .details-toggle{background:none;border:none;color:var(--muted);font-size:9px;cursor:pointer;padding:0;margin-bottom:4px;display:flex;align-items:center;gap:3px;font-family:'Source Code Pro',monospace}
@@ -419,3 +418,93 @@ tr.ghost-row.ghost-ramsch td { background: rgba(231,76,60,.04); }
 html[data-theme="light"] .queue-btn { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.4); color: #ffffff; }
 html[data-theme="light"] .queue-btn.bock-active   { border-color: #e8b04b; background: rgba(232,176,75,.3); color: #e8b04b; }
 html[data-theme="light"] .queue-btn.ramsch-active { border-color: #e74c3c; background: rgba(231,76,60,.3);  color: #e74c3c; }
+
+/* ===== GROSSE BUTTONS (Symbol oben, Text unten) ===== */
+.btn-sym {
+  font-size: 16px;
+  display: block;
+  line-height: 1.2;
+}
+.btn-lbl {
+  font-size: 8px;
+  display: block;
+  margin-top: 1px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* opt-btn und dbl-btn: groß wie type-btn */
+.opt-btn {
+  background: rgba(255,255,255,.04);
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-family: 'Source Code Pro', monospace;
+  padding: 5px 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: all .15s;
+  min-width: 50px;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.opt-btn.active {
+  border-color: var(--accent);
+  background: rgba(232,176,75,.15);
+  color: var(--accent);
+  font-weight: 700;
+}
+.opt-btn:active { transform: scale(.94); }
+
+.dbl-btn {
+  background: rgba(255,255,255,.04);
+  border: 2px solid var(--border);
+  border-radius: 5px;
+  color: var(--muted);
+  font-family: 'Source Code Pro', monospace;
+  padding: 5px 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: all .15s;
+  min-width: 50px;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.dbl-btn.active {
+  border-color: var(--purple);
+  background: rgba(168,85,247,.2);
+  color: #c084fc;
+  font-weight: 700;
+}
+.dbl-btn:active { transform: scale(.94); }
+
+/* null-btns row: same as type-row-2 */
+.null-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+/* implied = mitgezogen aber nicht direkt gewählt */
+.null-btn.implied, .opt-btn.implied {
+  border-color: rgba(232,176,75,.4);
+  background: rgba(232,176,75,.07);
+  color: var(--accent);
+  opacity: .75;
+}
+
+/* light theme overrides for bigger buttons */
+html[data-theme="light"] .opt-btn { background:#f0f2f5; border-color:#c0c8d8; color:#111111 }
+html[data-theme="light"] .opt-btn.active { background:#1a3a8f; border-color:#1a3a8f; color:#ffffff }
+html[data-theme="light"] .dbl-btn { background:#f0f2f5; border-color:#c0c8d8; color:#111111 }
+html[data-theme="light"] .dbl-btn.active { background:#1a3a8f; border-color:#1a3a8f; color:#ffffff }
+
+/* Header: settings btn $ larger */
+#settingsBtn { font-size: 16px; font-weight: 700; }

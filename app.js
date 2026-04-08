@@ -350,12 +350,17 @@ let wakeLockSentinel=null;
 async function toggleWakeLock(){
   const btn=document.getElementById('wakeLockBtn');
   if(wakeLockSentinel){
-    await wakeLockSentinel.release(); wakeLockSentinel=null; btn.style.opacity='0.4';
+    await wakeLockSentinel.release(); wakeLockSentinel=null;
+    btn.style.opacity='0.4'; btn.style.background=''; btn.style.borderColor=''; btn.style.color='';
   } else {
     try{
       wakeLockSentinel=await navigator.wakeLock.request('screen');
-      btn.style.opacity='1';
-      wakeLockSentinel.addEventListener('release',()=>{ wakeLockSentinel=null; btn.style.opacity='0.4'; });
+      btn.style.opacity='1'; btn.style.background='rgba(46,204,113,.25)';
+      btn.style.borderColor='var(--green)'; btn.style.color='var(--green)';
+      wakeLockSentinel.addEventListener('release',()=>{
+        wakeLockSentinel=null;
+        btn.style.opacity='0.4'; btn.style.background=''; btn.style.borderColor=''; btn.style.color='';
+      });
     }catch(e){}
   }
 }
@@ -445,7 +450,9 @@ if(document.getElementById('inputPanel')){
     const r=state.rounds[openRoundIdx];
     const sc=r.savedCalc||{};
     calc={type:sc.type||'', farbeIdx:sc.farbeIdx||0, factor:sc.factor||2,
-      nullVal:sc.nullVal||23, jackCount:1, jackDir:'mit',
+      nullVal:sc.nullVal||23,
+      nullHand:sc.nullHand||false, nullOuvert:sc.nullOuvert||false, nullRevol:sc.nullRevol||false,
+      jackCount:1, jackDir:'mit',
       hand:sc.hand||false, schneider:false, schneiderA:sc.schneiderA||false,
       schwarz:false, schwarzA:sc.schwarzA||false, ouvert:sc.ouvert||false,
       spitze:false, spitzeA:sc.spitzeA||false,

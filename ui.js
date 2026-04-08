@@ -42,8 +42,7 @@ function resetPanel(){
   const ri=document.getElementById('ramschInput');
   ri.value=''; ri.disabled=false; ri.style.opacity='';
   document.getElementById('geschobenVal').textContent='0';
-  document.getElementById('geschobenVal').style.cssText='';
-  renderGeschobenPips();
+  const _gpEl=document.getElementById('geschobenPips'); if(_gpEl) _gpEl.innerHTML='';
   document.getElementById('ramschDurch').classList.remove('active');
   document.getElementById('calcRamschInputRow').style.display='';
   document.getElementById('signBtn').textContent='+';
@@ -76,16 +75,15 @@ function buildNullBtns(){
   const container = document.getElementById('nullBtns');
   container.innerHTML = '';
   const variants = [
-    { id:'nullBtnHand',  emoji:'✋', label:'Hand',       variant:'hand'       },
-    { id:'nullBtnOuvert',emoji:'👁', label:'Ouvert',     variant:'ouvert'     },
-    { id:'nullBtnRevol', emoji:'🌀', label:'Revolution', variant:'revolution' },
+    { id:'nullBtnHand',   sym:'✋', lbl:'Hand',       variant:'hand'       },
+    { id:'nullBtnOuvert', sym:'👁', lbl:'Ouvert',     variant:'ouvert'     },
+    { id:'nullBtnRevol',  sym:'🌀', lbl:'Revolution', variant:'revolution' },
   ];
   variants.forEach(v => {
     const b = document.createElement('button');
-    b.className = 'null-btn';
+    b.className = 'type-btn'; // same size as game-type buttons
     b.id = v.id;
-    b.innerHTML = `<span style="font-size:14px;line-height:1">${v.emoji}</span><span style="font-size:9px;margin-left:4px">${v.label}</span>`;
-    b.style.cssText = 'display:flex;align-items:center;padding:5px 8px';
+    b.innerHTML = `<span class="type-suit">${v.sym}</span><span>${v.lbl}</span>`;
     b.onclick = () => toggleNullVariant(v.variant);
     container.appendChild(b);
   });
@@ -121,8 +119,8 @@ function refreshNullBtns(){
   const oBtn = document.getElementById('nullBtnOuvert');
   const rBtn = document.getElementById('nullBtnRevol');
   if(!hBtn) return;
-  hBtn.classList.toggle('active', calc.nullHand || calc.nullRevol);
-  oBtn.classList.toggle('active', calc.nullOuvert || calc.nullRevol);
+  hBtn.classList.toggle('active', !!(calc.nullHand || calc.nullRevol));
+  oBtn.classList.toggle('active', !!(calc.nullOuvert || calc.nullRevol));
   rBtn.classList.toggle('active', !!calc.nullRevol);
 }
 
@@ -272,27 +270,17 @@ function stepGeschoben(d){
 }
 
 function renderGeschobenPips(){
-  const el = document.getElementById('geschobenVal');
-  if(!el) return;
-  const n = calc.geschoben;
-  if(n === 0){ el.textContent = '0'; el.style.cssText=''; return; }
-  // Überlappende verdeckte Karten als Pips
-  let html = '<span style="position:relative;display:inline-flex;height:28px;align-items:center">';
-  for(let i=0;i<n;i++){
-    html += `<span style="
-      position:${i===0?'relative':'absolute'};
-      left:${i*10}px;
-      display:inline-flex;align-items:center;justify-content:center;
-      width:20px;height:28px;border-radius:3px;
-      border:1px solid rgba(96,165,250,.5);
-      background:linear-gradient(135deg,#1a2a4a,#0d1a2e);
-      color:rgba(96,165,250,.4);font-size:8px;font-weight:700;
-      box-shadow:1px 1px 3px rgba(0,0,0,.5);
-    ">🂠</span>`;
+  const numEl  = document.getElementById('geschobenVal');
+  const pipEl  = document.getElementById('geschobenPips');
+  if(!numEl) return;
+  numEl.textContent = calc.geschoben;
+  if(!pipEl) return;
+  if(calc.geschoben === 0){ pipEl.innerHTML = ''; return; }
+  let html = '';
+  for(let i = 0; i < calc.geschoben; i++){
+    html += '<span class="jack-pip">✋</span>';
   }
-  html += '</span>';
-  el.style.cssText = 'min-width:'+(12+n*10)+'px';
-  el.innerHTML = html;
+  pipEl.innerHTML = html;
 }
 
 function stepFactor(d){
@@ -679,6 +667,7 @@ function vormerken(){
   const typeKey=getTypeKey();
   const savedCalc={
     type:calc.type, farbeIdx:calc.farbeIdx, nullVal:calc.nullVal,
+    nullHand:calc.nullHand||false, nullOuvert:calc.nullOuvert||false, nullRevol:calc.nullRevol||false,
     hand:calc.hand, schneider:calc.schneider, schneiderA:calc.schneiderA,
     schwarz:calc.schwarz, schwarzA:calc.schwarzA, ouvert:calc.ouvert,
     spitzeA:calc.spitzeA, geschoben:calc.geschoben, jungfrau:calc.jungfrau,
@@ -707,6 +696,7 @@ function vormerken(){
   const sc2=state.rounds[openRoundIdx].savedCalc;
   selectedPlayers=[]; sign=1;
   calc={type:sc2.type, farbeIdx:sc2.farbeIdx, factor:sc2.factor, nullVal:sc2.nullVal,
+    nullHand:sc2.nullHand||false, nullOuvert:sc2.nullOuvert||false, nullRevol:sc2.nullRevol||false,
     jackCount:1, jackDir:'mit', hand:sc2.hand, schneider:false, schneiderA:sc2.schneiderA,
     schwarz:false, schwarzA:sc2.schwarzA, ouvert:sc2.ouvert,
     spitze:false, spitzeA:sc2.spitzeA||false, kontra:false, re:false, bock:false,
@@ -728,6 +718,7 @@ function openRoundForEdit(idx){
   openRoundIdx=idx;
   const sc=r.savedCalc;
   calc={type:sc.type, farbeIdx:sc.farbeIdx, factor:sc.factor, nullVal:sc.nullVal,
+    nullHand:sc.nullHand||false, nullOuvert:sc.nullOuvert||false, nullRevol:sc.nullRevol||false,
     jackCount:sc.jackCount||1, jackDir:sc.jackDir||'mit',
     hand:sc.hand, schneider:sc.schneider, schneiderA:sc.schneiderA,
     schwarz:sc.schwarz, schwarzA:sc.schwarzA, ouvert:sc.ouvert,
@@ -969,7 +960,9 @@ function startEditRound(idx){
   const sc=r.savedCalc||{};
   calc={
     type:sc.type||'', farbeIdx:sc.farbeIdx||0, factor:sc.factor||2,
-    nullVal:sc.nullVal||23, jackCount:sc.jackCount||1, jackDir:sc.jackDir||'mit',
+    nullVal:sc.nullVal||23,
+    nullHand:sc.nullHand||false, nullOuvert:sc.nullOuvert||false, nullRevol:sc.nullRevol||false,
+    jackCount:sc.jackCount||1, jackDir:sc.jackDir||'mit',
     hand:sc.hand||false, schneider:sc.schneider||false, schneiderA:sc.schneiderA||false,
     schwarz:sc.schwarz||false, schwarzA:sc.schwarzA||false, ouvert:sc.ouvert||false,
     spitze:sc.spitze||false, spitzeA:sc.spitzeA||false,
@@ -1032,6 +1025,7 @@ function saveEditRound(){
   r.isRamschGH=isRamschGH;
   r.savedCalc={
     type:calc.type, farbeIdx:calc.farbeIdx, nullVal:calc.nullVal,
+    nullHand:calc.nullHand||false, nullOuvert:calc.nullOuvert||false, nullRevol:calc.nullRevol||false,
     hand:calc.hand, schneider:calc.schneider, schneiderA:calc.schneiderA,
     schwarz:calc.schwarz, schwarzA:calc.schwarzA, ouvert:calc.ouvert,
     spitze:calc.spitze, spitzeA:calc.spitzeA, kontra:calc.kontra, re:calc.re, bock:calc.bock,
