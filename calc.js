@@ -20,21 +20,19 @@ function isDurchActive(){
 }
 
 // ===== NULL-LABELS =====
-function nullHand(v)   { return v===35||v===59||v===92; }
-function nullOuvert(v) { return v===46||v===59||v===92; }
-function nullRevol(v)  { return v===92; }
-
 function nullLabel(v){
-  let s = '∅ Null';
-  if(nullRevol(v))     s += ' 🌀';
-  else { if(nullOuvert(v)) s += ' 👁'; if(nullHand(v)) s += ' ✋'; }
-  return s;
+  const labels = {
+    de: {23:'Null', 35:'Null Hand', 46:'Null Ouvert', 59:'Null Ouvert Hand', 92:'Revolution'},
+    en: {23:'Null', 35:'Null Hand', 46:'Null Ouvert', 59:'Null Ouvert Hand', 92:'Revolution'},
+    fr: {23:'Null', 35:'Null Main', 46:'Null Ouvert', 59:'Null Ouvert Main', 92:'Révolution'},
+    es: {23:'Null', 35:'Null Mano', 46:'Null Ouvert', 59:'Null Ouvert Mano', 92:'Revolución'},
+    it: {23:'Null', 35:'Null Mano', 46:'Null Ouvert', 59:'Null Ouvert Mano', 92:'Rivoluzione'},
+  };
+  return (labels[lang] || labels.de)[v] || 'Null';
 }
 function nullLabelShort(v){
-  let s = '∅ Null';
-  if(nullRevol(v))     s += ' 🌀';
-  else { if(nullOuvert(v)) s += ' 👁'; if(nullHand(v)) s += ' ✋'; }
-  return s;
+  const s = {23:'Null', 35:'NullH', 46:'NullO', 59:'NullOH', 92:'Revol.'};
+  return s[v] || 'Null';
 }
 
 // ===== FAKTOR =====

@@ -12,7 +12,6 @@ let selectedPlayers = [], sign = 1, lastDeleted = null, panelOpen = true, tableV
 
 let calc = {
   type:'', farbeIdx:0, factor:2, nullVal:23,
-  nullHand:false, nullOuvert:false, nullRevol:false,
   jackCount:1, jackDir:'mit',
   hand:false, schneider:false, schneiderA:false, schwarz:false, schwarzA:false, ouvert:false,
   kontra:false, re:false, bock:false, jungfrau:false, geschoben:0, verloren:false
@@ -450,9 +449,7 @@ if(document.getElementById('inputPanel')){
     const r=state.rounds[openRoundIdx];
     const sc=r.savedCalc||{};
     calc={type:sc.type||'', farbeIdx:sc.farbeIdx||0, factor:sc.factor||2,
-      nullVal:sc.nullVal||23,
-      nullHand:sc.nullHand||false, nullOuvert:sc.nullOuvert||false, nullRevol:sc.nullRevol||false,
-      jackCount:1, jackDir:'mit',
+      nullVal:sc.nullVal||23, jackCount:1, jackDir:'mit',
       hand:sc.hand||false, schneider:false, schneiderA:sc.schneiderA||false,
       schwarz:false, schwarzA:sc.schwarzA||false, ouvert:sc.ouvert||false,
       spitze:false, spitzeA:sc.spitzeA||false,

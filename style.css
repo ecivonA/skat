@@ -177,6 +177,7 @@
   .logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--accent);display:flex;align-items:center;gap:7px}
   .header-actions{display:flex;gap:6px;align-items:center}
   .btn-icon{background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:7px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  #settingsBtn{font-size:16px;font-weight:700;}
   .btn-icon:active{transform:scale(.9)}
 
   /* Language selector */
@@ -418,51 +419,3 @@ tr.ghost-row.ghost-ramsch td { background: rgba(231,76,60,.04); }
 html[data-theme="light"] .queue-btn { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.4); color: #ffffff; }
 html[data-theme="light"] .queue-btn.bock-active   { border-color: #e8b04b; background: rgba(232,176,75,.3); color: #e8b04b; }
 html[data-theme="light"] .queue-btn.ramsch-active { border-color: #e74c3c; background: rgba(231,76,60,.3);  color: #e74c3c; }
-
-/* ===== NEUE BUTTON-STILE ===== */
-.btn-sym { font-size:16px; display:block; line-height:1.2; }
-.btn-lbl { font-size:8px; display:block; margin-top:2px; line-height:1.1; white-space:nowrap; }
-
-.opt-btn {
-  background:rgba(255,255,255,.04); border:2px solid var(--border); border-radius:6px;
-  color:var(--muted); font-family:'Source Code Pro',monospace;
-  padding:5px 7px; cursor:pointer; text-align:center; transition:all .15s;
-  min-width:52px; min-height:50px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-}
-.opt-btn.active { border-color:var(--accent); background:rgba(232,176,75,.15); color:var(--accent); font-weight:700; }
-.opt-btn.implied { border-color:rgba(232,176,75,.4); background:rgba(232,176,75,.07); color:var(--accent); opacity:.75; }
-.opt-btn:active { transform:scale(.94); }
-
-.dbl-btn {
-  background:rgba(255,255,255,.04); border:2px solid var(--border); border-radius:5px;
-  color:var(--muted); font-family:'Source Code Pro',monospace;
-  padding:5px 7px; cursor:pointer; text-align:center; transition:all .15s;
-  min-width:52px; min-height:50px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-}
-.dbl-btn.active { border-color:var(--purple); background:rgba(168,85,247,.2); color:#c084fc; font-weight:700; }
-.dbl-btn:active { transform:scale(.94); }
-
-/* Null-Buttons: linksbündig, gleich wie opt-btn */
-.null-row { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px; justify-content:flex-start; }
-
-/* Tabelle: Wert-Spalte Kontrast + Breite, Spieltyp skaliert */
-.game-val { font-size:10px; font-weight:600; }
-.game-val.pos { color:var(--green); }
-.game-val.neg { color:var(--red); }
-thead th.col-val  { width:48px; text-align:right; }
-thead th.col-type { width:64px; }
-td:nth-last-child(2) { text-align:right; padding-right:4px; }
-.game-type-tag { font-size:calc(8px * var(--fs)); max-width:60px; overflow:hidden; text-overflow:ellipsis; display:inline-block; }
-html.zoom-3 .game-type-tag { max-width:72px; }
-html.zoom-4 .game-type-tag { max-width:84px; }
-
-/* Header $ */
-#settingsBtn { font-size:16px; font-weight:700; }
-
-/* Light theme */
-html[data-theme="light"] .opt-btn { background:#f0f2f5; border-color:#c0c8d8; color:#111111 }
-html[data-theme="light"] .opt-btn.active { background:#1a3a8f; border-color:#1a3a8f; color:#ffffff }
-html[data-theme="light"] .dbl-btn { background:#f0f2f5; border-color:#c0c8d8; color:#111111 }
-html[data-theme="light"] .dbl-btn.active { background:#1a3a8f; border-color:#1a3a8f; color:#ffffff }
