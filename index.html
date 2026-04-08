@@ -198,23 +198,25 @@
         </div>
       </div>
       <div id="detailRamsch" style="display:none">
-        <div class="detail-section-label">🧜 Ramsch-Extras &amp; Verdoppelungen</div>
-        <div class="detail-opts" style="align-items:center;gap:6px;flex-wrap:wrap">
+        <div class="detail-section-label" data-t="ramschExtras"></div>
+        <div class="detail-opts" style="align-items:center;gap:8px">
           <button class="dbl-btn" id="dJungfrau" onclick="toggleDbl('jungfrau')" ><span class="btn-sym">🧜</span><span class="btn-lbl">Jungfrau</span></button>
-          <span class="row-divider"></span>
-          <span style="font-size:10px;color:var(--muted)" data-t="geschoben"></span>
+          <span style="font-size:10px;color:var(--muted);margin-left:4px" data-t="geschoben"></span>
           <div class="stepper" style="margin:0">
             <button onclick="stepGeschoben(-1)">−</button>
             <span id="geschobenVal">0</span>
             <button onclick="stepGeschoben(1)">+</button>
           </div>
-          <div class="jack-card" id="geschobenPips" style="margin-left:2px"></div>
-          <span class="row-divider"></span>
+          <div class="jack-card" id="geschobenPips" style="margin-left:4px"></div>
+        </div>
+      </div>
+      <!-- Bock-Button bei Ramsch in Bock-Runde -->
+      <div id="ramschBockBar" style="display:none">
+        <div class="detail-section-label" data-t="verdoppelungen"></div>
+        <div class="detail-opts" style="align-items:center">
           <button class="dbl-btn" id="dBockRamsch" onclick="toggleDbl('bock')" ><span class="btn-sym">🔔</span><span class="btn-lbl">Bock</span></button>
         </div>
       </div>
-      <!-- ramschBockBar: Platzhalter, Bock ist jetzt in detailRamsch -->
-      <div id="ramschBockBar" style="display:none"></div>
     </div>
 
     <!-- ══ STUFE 2: Nach dem Spiel ══ -->
@@ -232,23 +234,27 @@
         <div class="jack-row" id="jackRow"></div>
       </div>
 
-      <!-- Erreicht + Verdoppelungen: eine Zeile -->
+      <!-- Erreicht: Schneider, Schwarz -->
       <div id="stage2Erreicht" style="display:none">
-        <div class="detail-section-label">✂️ Zusätze &amp; ×2 Verdoppelungen</div>
-        <div class="detail-opts stage2-combined-row">
+        <div class="detail-section-label" data-t="zusaetze"></div>
+        <div class="detail-opts">
           <button class="opt-btn" id="dSchneider"  onclick="toggleOpt('schneider')"  ><span class="btn-sym">✂️</span><span class="btn-lbl">Schneider</span></button>
           <button class="opt-btn" id="dSchwarz"    onclick="toggleOpt('schwarz')"    ><span class="btn-sym">🚫</span><span class="btn-lbl">Schwarz</span></button>
           <button class="opt-btn" id="dSpitze"     onclick="toggleOpt('spitze')"     ><span class="btn-sym">🎯</span><span class="btn-lbl">Spitze</span></button>
-          <span class="row-divider"></span>
+        </div>
+      </div>
+
+      <!-- Verdopplungen -->
+      <div id="detailNormal">
+        <div class="detail-section-label" data-t="verdoppelungen"></div>
+        <div class="detail-opts" style="align-items:stretch">
           <button class="dbl-btn" id="dKontra"   onclick="toggleDbl('kontra')"   ><span class="btn-sym">⚡</span><span class="btn-lbl">Kontra</span></button>
           <button class="dbl-btn" id="dRe"       onclick="toggleDbl('re')"       ><span class="btn-sym">⚡⚡</span><span class="btn-lbl">Re</span></button>
           <button class="dbl-btn" id="dBock"     onclick="toggleDbl('bock')"     ><span class="btn-sym">🔔</span><span class="btn-lbl">Bock</span></button>
-          <span class="row-divider"></span>
+          <span style="flex:1"></span>
           <button class="dbl-btn" id="dVerloren" onclick="toggleDbl('verloren')" ><span class="btn-sym">✕</span><span class="btn-lbl">Verloren ×2</span></button>
         </div>
       </div>
-      <!-- detailNormal: leerer Platzhalter damit JS-Refs nicht brechen -->
-      <div id="detailNormal" style="display:none"></div>
     </div>
 
     <!-- Wert + Buttons -->

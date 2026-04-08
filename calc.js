@@ -26,14 +26,13 @@ function nullRevol(v)  { return v===92; }
 
 function nullLabel(v){
   let s = '∅ Null';
-  if(nullRevol(v))       s += ' 🌀';
+  if(nullRevol(v))     s += ' 🌀';
   else { if(nullOuvert(v)) s += ' 👁'; if(nullHand(v)) s += ' ✋'; }
   return s;
 }
 function nullLabelShort(v){
-  // Tabelle: immer "Null" als Basis für Lesbarkeit
   let s = '∅ Null';
-  if(nullRevol(v))       s += ' 🌀';
+  if(nullRevol(v))     s += ' 🌀';
   else { if(nullOuvert(v)) s += ' 👁'; if(nullHand(v)) s += ' ✋'; }
   return s;
 }

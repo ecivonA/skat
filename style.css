@@ -423,7 +423,6 @@ html[data-theme="light"] .queue-btn.ramsch-active { border-color: #e74c3c; backg
 .btn-sym { font-size:16px; display:block; line-height:1.2; }
 .btn-lbl { font-size:8px; display:block; margin-top:2px; line-height:1.1; white-space:nowrap; }
 
-/* opt-btn: groß, quadratisch, Symbol oben / Text unten */
 .opt-btn {
   background:rgba(255,255,255,.04); border:2px solid var(--border); border-radius:6px;
   color:var(--muted); font-family:'Source Code Pro',monospace;
@@ -435,7 +434,6 @@ html[data-theme="light"] .queue-btn.ramsch-active { border-color: #e74c3c; backg
 .opt-btn.implied { border-color:rgba(232,176,75,.4); background:rgba(232,176,75,.07); color:var(--accent); opacity:.75; }
 .opt-btn:active { transform:scale(.94); }
 
-/* dbl-btn: gleich groß */
 .dbl-btn {
   background:rgba(255,255,255,.04); border:2px solid var(--border); border-radius:5px;
   color:var(--muted); font-family:'Source Code Pro',monospace;
@@ -449,39 +447,22 @@ html[data-theme="light"] .queue-btn.ramsch-active { border-color: #e74c3c; backg
 /* Null-Buttons: linksbündig, gleich wie opt-btn */
 .null-row { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px; justify-content:flex-start; }
 
-/* Trennlinie zwischen Button-Gruppen */
-.row-divider { width:1px; background:var(--border); align-self:stretch; margin:0 4px; flex-shrink:0; }
-
-/* Stage 2 combined row */
-.stage2-combined-row { display:flex; flex-wrap:wrap; gap:4px; align-items:stretch; }
-
-/* ===== TABELLE: Wert-Spalte + Spieltyp-Spalte ===== */
-/* Wert-Spalte: mehr Kontrast, rechtsbündig */
-.game-val { font-size:10px; font-weight:600; color:var(--text); text-align:right; padding-right:4px; }
+/* Tabelle: Wert-Spalte Kontrast + Breite, Spieltyp skaliert */
+.game-val { font-size:10px; font-weight:600; }
 .game-val.pos { color:var(--green); }
 .game-val.neg { color:var(--red); }
-
-/* Wert + Spieltyp-Spalten breiter */
 thead th.col-val  { width:48px; text-align:right; }
 thead th.col-type { width:64px; }
 td:nth-last-child(2) { text-align:right; padding-right:4px; }
-
-/* Spieltyp-Tag: Schrift mit Zoom skalieren */
-.game-type-tag {
-  font-size: calc(8px * var(--fs));
-  color:var(--muted); background:rgba(255,255,255,.05);
-  border-radius:3px; padding:1px 4px; white-space:nowrap;
-  max-width: 60px; overflow:hidden; text-overflow:ellipsis; display:inline-block;
-}
+.game-type-tag { font-size:calc(8px * var(--fs)); max-width:60px; overflow:hidden; text-overflow:ellipsis; display:inline-block; }
 html.zoom-3 .game-type-tag { max-width:72px; }
 html.zoom-4 .game-type-tag { max-width:84px; }
+
+/* Header $ */
+#settingsBtn { font-size:16px; font-weight:700; }
 
 /* Light theme */
 html[data-theme="light"] .opt-btn { background:#f0f2f5; border-color:#c0c8d8; color:#111111 }
 html[data-theme="light"] .opt-btn.active { background:#1a3a8f; border-color:#1a3a8f; color:#ffffff }
 html[data-theme="light"] .dbl-btn { background:#f0f2f5; border-color:#c0c8d8; color:#111111 }
 html[data-theme="light"] .dbl-btn.active { background:#1a3a8f; border-color:#1a3a8f; color:#ffffff }
-html[data-theme="light"] .row-divider { background:#c0c8d8; }
-
-/* Header settings $ */
-#settingsBtn { font-size:16px; font-weight:700; }

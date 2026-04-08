@@ -81,7 +81,7 @@ function buildNullBtns(){
   ];
   variants.forEach(v => {
     const b = document.createElement('button');
-    b.className = 'opt-btn'; // same size as ansage buttons
+    b.className = 'opt-btn';
     b.id = v.id;
     b.innerHTML = `<span class="btn-sym">${v.sym}</span><span class="btn-lbl">${v.lbl}</span>`;
     b.onclick = () => toggleNullVariant(v.variant);
@@ -237,7 +237,7 @@ function setType(tp){
     // In Stage 2: Ramsch-Details anzeigen
     const _cr=document.getElementById('calcRamsch'); if(_cr) _cr.style.display=tp==='ramsch'?'':'none';
     const _dr=document.getElementById('detailRamsch'); if(_dr) _dr.style.display=tp==='ramsch'?'':'none';
-    // detailNormal merged into stage2Erreicht
+    const _dn=document.getElementById('detailNormal'); if(_dn) _dn.style.display=(tp===''||tp==='leer')?'none':'';
   }
   if(isSuit) document.getElementById('baseInfo').textContent =
     FARBEN_VALS[calc.farbeIdx]+'×'+calc.factor+'='+(FARBEN_VALS[calc.farbeIdx]*calc.factor);
