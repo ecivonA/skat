@@ -80,11 +80,11 @@ function toggleQueueBlock(tp){
     return c;
   })();
 
-  if(trailingCount > 0){
-    // Es liegen Slots dieses Typs am Ende → alle entfernen (vollständige + angebrochene)
-    state.queue.splice(q.length - trailingCount, trailingCount);
+  if(trailingCount >= n){
+    // Es liegt mindestens ein vollständiger Block am Ende → entfernen
+    state.queue.splice(q.length - n, n);
   } else {
-    // Kein Trailing-Block → neuen Block anhängen
+    // Keinen oder unvollständigen Block am Ende → neuen Block anhängen
     const n2 = queueBlockSize();
     for(let i=0;i<n2;i++) state.queue.push({type:tp});
   }
@@ -349,12 +349,17 @@ let wakeLockSentinel=null;
 async function toggleWakeLock(){
   const btn=document.getElementById('wakeLockBtn');
   if(wakeLockSentinel){
-    await wakeLockSentinel.release(); wakeLockSentinel=null; btn.style.opacity='0.4';
+    await wakeLockSentinel.release(); wakeLockSentinel=null;
+    btn.style.opacity='0.4'; btn.style.background=''; btn.style.borderColor=''; btn.style.color='';
   } else {
     try{
       wakeLockSentinel=await navigator.wakeLock.request('screen');
-      btn.style.opacity='1';
-      wakeLockSentinel.addEventListener('release',()=>{ wakeLockSentinel=null; btn.style.opacity='0.4'; });
+      btn.style.opacity='1'; btn.style.background='rgba(46,204,113,.25)';
+      btn.style.borderColor='var(--green)'; btn.style.color='var(--green)';
+      wakeLockSentinel.addEventListener('release',()=>{
+        wakeLockSentinel=null;
+        btn.style.opacity='0.4'; btn.style.background=''; btn.style.borderColor=''; btn.style.color='';
+      });
     }catch(e){}
   }
 }
