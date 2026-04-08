@@ -80,11 +80,11 @@ function toggleQueueBlock(tp){
     return c;
   })();
 
-  if(trailingCount >= n){
-    // Es liegt mindestens ein vollständiger Block am Ende → entfernen
-    state.queue.splice(q.length - n, n);
+  if(trailingCount > 0){
+    // Es liegen Slots dieses Typs am Ende → alle entfernen (vollständige + angebrochene)
+    state.queue.splice(q.length - trailingCount, trailingCount);
   } else {
-    // Keinen oder unvollständigen Block am Ende → neuen Block anhängen
+    // Kein Trailing-Block → neuen Block anhängen
     const n2 = queueBlockSize();
     for(let i=0;i<n2;i++) state.queue.push({type:tp});
   }
