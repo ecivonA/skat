@@ -419,92 +419,69 @@ html[data-theme="light"] .queue-btn { background: rgba(255,255,255,.2); border-c
 html[data-theme="light"] .queue-btn.bock-active   { border-color: #e8b04b; background: rgba(232,176,75,.3); color: #e8b04b; }
 html[data-theme="light"] .queue-btn.ramsch-active { border-color: #e74c3c; background: rgba(231,76,60,.3);  color: #e74c3c; }
 
-/* ===== GROSSE BUTTONS (Symbol oben, Text unten) ===== */
-.btn-sym {
-  font-size: 16px;
-  display: block;
-  line-height: 1.2;
-}
-.btn-lbl {
-  font-size: 8px;
-  display: block;
-  margin-top: 1px;
-  line-height: 1.1;
-  white-space: nowrap;
-}
+/* ===== NEUE BUTTON-STILE ===== */
+.btn-sym { font-size:16px; display:block; line-height:1.2; }
+.btn-lbl { font-size:8px; display:block; margin-top:2px; line-height:1.1; white-space:nowrap; }
 
-/* opt-btn und dbl-btn: groß wie type-btn */
+/* opt-btn: groß, quadratisch, Symbol oben / Text unten */
 .opt-btn {
-  background: rgba(255,255,255,.04);
-  border: 2px solid var(--border);
-  border-radius: 6px;
-  color: var(--muted);
-  font-family: 'Source Code Pro', monospace;
-  padding: 5px 6px;
-  cursor: pointer;
-  text-align: center;
-  transition: all .15s;
-  min-width: 50px;
-  min-height: 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  background:rgba(255,255,255,.04); border:2px solid var(--border); border-radius:6px;
+  color:var(--muted); font-family:'Source Code Pro',monospace;
+  padding:5px 7px; cursor:pointer; text-align:center; transition:all .15s;
+  min-width:52px; min-height:50px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
-.opt-btn.active {
-  border-color: var(--accent);
-  background: rgba(232,176,75,.15);
-  color: var(--accent);
-  font-weight: 700;
-}
-.opt-btn:active { transform: scale(.94); }
+.opt-btn.active { border-color:var(--accent); background:rgba(232,176,75,.15); color:var(--accent); font-weight:700; }
+.opt-btn.implied { border-color:rgba(232,176,75,.4); background:rgba(232,176,75,.07); color:var(--accent); opacity:.75; }
+.opt-btn:active { transform:scale(.94); }
 
+/* dbl-btn: gleich groß */
 .dbl-btn {
-  background: rgba(255,255,255,.04);
-  border: 2px solid var(--border);
-  border-radius: 5px;
-  color: var(--muted);
-  font-family: 'Source Code Pro', monospace;
-  padding: 5px 6px;
-  cursor: pointer;
-  text-align: center;
-  transition: all .15s;
-  min-width: 50px;
-  min-height: 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  background:rgba(255,255,255,.04); border:2px solid var(--border); border-radius:5px;
+  color:var(--muted); font-family:'Source Code Pro',monospace;
+  padding:5px 7px; cursor:pointer; text-align:center; transition:all .15s;
+  min-width:52px; min-height:50px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
-.dbl-btn.active {
-  border-color: var(--purple);
-  background: rgba(168,85,247,.2);
-  color: #c084fc;
-  font-weight: 700;
-}
-.dbl-btn:active { transform: scale(.94); }
+.dbl-btn.active { border-color:var(--purple); background:rgba(168,85,247,.2); color:#c084fc; font-weight:700; }
+.dbl-btn:active { transform:scale(.94); }
 
-/* null-btns row: same as type-row-2 */
-.null-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  margin-bottom: 6px;
-}
+/* Null-Buttons: linksbündig, gleich wie opt-btn */
+.null-row { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px; justify-content:flex-start; }
 
-/* implied = mitgezogen aber nicht direkt gewählt */
-.null-btn.implied, .opt-btn.implied {
-  border-color: rgba(232,176,75,.4);
-  background: rgba(232,176,75,.07);
-  color: var(--accent);
-  opacity: .75;
-}
+/* Trennlinie zwischen Button-Gruppen */
+.row-divider { width:1px; background:var(--border); align-self:stretch; margin:0 4px; flex-shrink:0; }
 
-/* light theme overrides for bigger buttons */
+/* Stage 2 combined row */
+.stage2-combined-row { display:flex; flex-wrap:wrap; gap:4px; align-items:stretch; }
+
+/* ===== TABELLE: Wert-Spalte + Spieltyp-Spalte ===== */
+/* Wert-Spalte: mehr Kontrast, rechtsbündig */
+.game-val { font-size:10px; font-weight:600; color:var(--text); text-align:right; padding-right:4px; }
+.game-val.pos { color:var(--green); }
+.game-val.neg { color:var(--red); }
+
+/* Wert + Spieltyp-Spalten breiter */
+thead th.col-val  { width:48px; text-align:right; }
+thead th.col-type { width:64px; }
+td:nth-last-child(2) { text-align:right; padding-right:4px; }
+
+/* Spieltyp-Tag: Schrift mit Zoom skalieren */
+.game-type-tag {
+  font-size: calc(8px * var(--fs));
+  color:var(--muted); background:rgba(255,255,255,.05);
+  border-radius:3px; padding:1px 4px; white-space:nowrap;
+  max-width: 60px; overflow:hidden; text-overflow:ellipsis; display:inline-block;
+}
+html.zoom-3 .game-type-tag { max-width:72px; }
+html.zoom-4 .game-type-tag { max-width:84px; }
+
+/* Light theme */
 html[data-theme="light"] .opt-btn { background:#f0f2f5; border-color:#c0c8d8; color:#111111 }
 html[data-theme="light"] .opt-btn.active { background:#1a3a8f; border-color:#1a3a8f; color:#ffffff }
 html[data-theme="light"] .dbl-btn { background:#f0f2f5; border-color:#c0c8d8; color:#111111 }
 html[data-theme="light"] .dbl-btn.active { background:#1a3a8f; border-color:#1a3a8f; color:#ffffff }
+html[data-theme="light"] .row-divider { background:#c0c8d8; }
 
-/* Header: settings btn $ larger */
-#settingsBtn { font-size: 16px; font-weight: 700; }
+/* Header settings $ */
+#settingsBtn { font-size:16px; font-weight:700; }

@@ -42,7 +42,7 @@ function resetPanel(){
   const ri=document.getElementById('ramschInput');
   ri.value=''; ri.disabled=false; ri.style.opacity='';
   document.getElementById('geschobenVal').textContent='0';
-  const _gpEl=document.getElementById('geschobenPips'); if(_gpEl) _gpEl.innerHTML='';
+  const _gp=document.getElementById('geschobenPips'); if(_gp) _gp.innerHTML='';
   document.getElementById('ramschDurch').classList.remove('active');
   document.getElementById('calcRamschInputRow').style.display='';
   document.getElementById('signBtn').textContent='+';
@@ -81,9 +81,9 @@ function buildNullBtns(){
   ];
   variants.forEach(v => {
     const b = document.createElement('button');
-    b.className = 'type-btn'; // same size as game-type buttons
+    b.className = 'opt-btn'; // same size as ansage buttons
     b.id = v.id;
-    b.innerHTML = `<span class="type-suit">${v.sym}</span><span>${v.lbl}</span>`;
+    b.innerHTML = `<span class="btn-sym">${v.sym}</span><span class="btn-lbl">${v.lbl}</span>`;
     b.onclick = () => toggleNullVariant(v.variant);
     container.appendChild(b);
   });
@@ -237,7 +237,7 @@ function setType(tp){
     // In Stage 2: Ramsch-Details anzeigen
     const _cr=document.getElementById('calcRamsch'); if(_cr) _cr.style.display=tp==='ramsch'?'':'none';
     const _dr=document.getElementById('detailRamsch'); if(_dr) _dr.style.display=tp==='ramsch'?'':'none';
-    const _dn=document.getElementById('detailNormal'); if(_dn) _dn.style.display=(tp===''||tp==='leer')?'none':'';
+    // detailNormal merged into stage2Erreicht
   }
   if(isSuit) document.getElementById('baseInfo').textContent =
     FARBEN_VALS[calc.farbeIdx]+'×'+calc.factor+'='+(FARBEN_VALS[calc.farbeIdx]*calc.factor);
@@ -265,20 +265,18 @@ function setFarbe(i){
 
 function stepGeschoben(d){
   calc.geschoben = Math.max(0, Math.min(3, calc.geschoben+d));
+  document.getElementById('geschobenVal').textContent = calc.geschoben;
   renderGeschobenPips();
   updateCalcResult();
 }
 
 function renderGeschobenPips(){
-  const numEl  = document.getElementById('geschobenVal');
-  const pipEl  = document.getElementById('geschobenPips');
-  if(!numEl) return;
-  numEl.textContent = calc.geschoben;
+  const pipEl = document.getElementById('geschobenPips');
   if(!pipEl) return;
   if(calc.geschoben === 0){ pipEl.innerHTML = ''; return; }
   let html = '';
   for(let i = 0; i < calc.geschoben; i++){
-    html += '<span class="jack-pip">✋</span>';
+    html += '<span class="jack-pip" style="font-size:14px">✋</span>';
   }
   pipEl.innerHTML = html;
 }

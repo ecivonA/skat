@@ -25,21 +25,16 @@ function nullOuvert(v) { return v===46||v===59||v===92; }
 function nullRevol(v)  { return v===92; }
 
 function nullLabel(v){
-  // Always show "Null" as base, append variant symbols
   let s = '∅ Null';
   if(nullRevol(v))       s += ' 🌀';
-  else {
-    if(nullOuvert(v))    s += ' 👁';
-    if(nullHand(v))      s += ' ✋';
-  }
+  else { if(nullOuvert(v)) s += ' 👁'; if(nullHand(v)) s += ' ✋'; }
   return s;
 }
 function nullLabelShort(v){
-  // Table column: always show "Null" so it's readable
-  if(nullRevol(v)) return '∅ Null 🌀';
+  // Tabelle: immer "Null" als Basis für Lesbarkeit
   let s = '∅ Null';
-  if(nullOuvert(v)) s += ' 👁';
-  if(nullHand(v))   s += ' ✋';
+  if(nullRevol(v))       s += ' 🌀';
+  else { if(nullOuvert(v)) s += ' 👁'; if(nullHand(v)) s += ' ✋'; }
   return s;
 }
 
