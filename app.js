@@ -12,7 +12,6 @@ let selectedPlayers = [], sign = 1, lastDeleted = null, panelOpen = true, tableV
 
 let calc = {
   type:'', farbeIdx:0, factor:2, nullVal:23,
-  nullHand:false, nullOuvert:false, nullRevol:false,
   jackCount:1, jackDir:'mit',
   hand:false, schneider:false, schneiderA:false, schwarz:false, schwarzA:false, ouvert:false,
   kontra:false, re:false, bock:false, jungfrau:false, geschoben:0, verloren:false
@@ -259,10 +258,42 @@ function hideToast(){ document.getElementById('toast').classList.remove('show');
 
 // ===== RESET =====
 function closeReset(){ document.getElementById('resetModal').classList.remove('show'); }
+
 function confirmReset(){
-  openRoundIdx=-1;
-  state.rounds=[]; state.totals=state.has4?[0,0,0,0]:[0,0,0]; state.queue=[];
-  save(); resetPanel(); renderAll(); closeReset(); updateQueueUI();
+  const isHard = document.getElementById('resetModal').dataset.hard === 'true';
+  if(isHard){
+    // Alles löschen: State, Namen, Geld, Theme, Font, Sprache
+    try{ localStorage.clear(); }catch(e){}
+    state={ names:['Spieler 1','Spieler 2','Spieler 3'], rounds:[], totals:[0,0,0], lang:'de', has4:false, queue:[] };
+    moneySettings={ rate:0, currency:'€' };
+    lang='de';
+    applyTheme(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
+    const html=document.documentElement;
+    html.classList.remove('zoom-2','zoom-3','zoom-4'); html.classList.add('zoom-2');
+    const fontBtn=document.getElementById('fontBtn'); if(fontBtn) fontBtn.textContent='A';
+    setLang('de');
+  } else {
+    // Nur Runden löschen
+    openRoundIdx=-1;
+    state.rounds=[]; state.totals=state.has4?[0,0,0,0]:[0,0,0]; state.queue=[];
+    save();
+  }
+  resetPanel(); renderAll(); closeReset(); updateQueueUI();
+}
+
+function openResetDialog(hard){
+  const modal = document.getElementById('resetModal');
+  modal.dataset.hard = hard ? 'true' : 'false';
+  if(hard){
+    document.getElementById('modalTitle').textContent  = '⚠️ Alles zurücksetzen?';
+    document.getElementById('modalText').textContent   = 'Namen, Währung, Sprache, Theme – wirklich alles wird gelöscht.';
+    document.getElementById('modalConfirm').textContent= 'Alles löschen';
+  } else {
+    document.getElementById('modalTitle').textContent  = t('modalTitle');
+    document.getElementById('modalText').textContent   = t('modalText');
+    document.getElementById('modalConfirm').textContent= t('loeschen');
+  }
+  modal.classList.add('show');
 }
 
 // ===== EINSTELLUNGEN =====
@@ -350,17 +381,12 @@ let wakeLockSentinel=null;
 async function toggleWakeLock(){
   const btn=document.getElementById('wakeLockBtn');
   if(wakeLockSentinel){
-    await wakeLockSentinel.release(); wakeLockSentinel=null;
-    btn.style.opacity='0.4'; btn.style.background=''; btn.style.borderColor=''; btn.style.color='';
+    await wakeLockSentinel.release(); wakeLockSentinel=null; btn.style.opacity='0.4';
   } else {
     try{
       wakeLockSentinel=await navigator.wakeLock.request('screen');
-      btn.style.opacity='1'; btn.style.background='rgba(46,204,113,.25)';
-      btn.style.borderColor='var(--green)'; btn.style.color='var(--green)';
-      wakeLockSentinel.addEventListener('release',()=>{
-        wakeLockSentinel=null;
-        btn.style.opacity='0.4'; btn.style.background=''; btn.style.borderColor=''; btn.style.color='';
-      });
+      btn.style.opacity='1';
+      wakeLockSentinel.addEventListener('release',()=>{ wakeLockSentinel=null; btn.style.opacity='0.4'; });
     }catch(e){}
   }
 }
@@ -450,9 +476,7 @@ if(document.getElementById('inputPanel')){
     const r=state.rounds[openRoundIdx];
     const sc=r.savedCalc||{};
     calc={type:sc.type||'', farbeIdx:sc.farbeIdx||0, factor:sc.factor||2,
-      nullVal:sc.nullVal||23,
-      nullHand:sc.nullHand||false, nullOuvert:sc.nullOuvert||false, nullRevol:sc.nullRevol||false,
-      jackCount:1, jackDir:'mit',
+      nullVal:sc.nullVal||23, jackCount:1, jackDir:'mit',
       hand:sc.hand||false, schneider:false, schneiderA:sc.schneiderA||false,
       schwarz:false, schwarzA:sc.schwarzA||false, ouvert:sc.ouvert||false,
       spitze:false, spitzeA:sc.spitzeA||false,
@@ -465,7 +489,10 @@ if(document.getElementById('inputPanel')){
   }
 
   // Event Listener
-  document.getElementById('resetBtn').addEventListener('click', ()=>document.getElementById('resetModal').classList.add('show'));
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    const noRounds = state.rounds.length === 0;
+    openResetDialog(noRounds);
+  });
   document.getElementById('undoBtn').addEventListener('click', undoLast);
   document.getElementById('toastUndo').onclick = function(){
     if(!lastDeleted) return;
