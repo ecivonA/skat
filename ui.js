@@ -306,7 +306,6 @@ function updateAnsagenUI(){
   if(dSpitzeA) dSpitzeA.classList.toggle('active', calc.spitzeA);
 }
 
-```javascript
 function toggleOpt(key){
   if(key==='hand'){
     calc.hand=!calc.hand;
