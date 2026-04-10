@@ -346,7 +346,6 @@ function toggleOpt(key){
   updateAnsagenUI();
   syncFactor(); updateCalcResult();
 }
-```
 
 function toggleDbl(key){
   calc[key]=!calc[key];
