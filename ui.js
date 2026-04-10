@@ -306,14 +306,15 @@ function updateAnsagenUI(){
   if(dSpitzeA) dSpitzeA.classList.toggle('active', calc.spitzeA);
 }
 
+```javascript
 function toggleOpt(key){
   if(key==='hand'){
     calc.hand=!calc.hand;
-    if(!calc.hand){ calc.schneiderA=false; calc.schwarzA=false; calc.ouvert=false; }
+    if(!calc.hand){ calc.schneiderA=false; calc.schwarzA=false; calc.ouvert=false; calc.spitzeA=false; }
   } else if(key==='schneiderA'){
     calc.schneiderA=!calc.schneiderA;
     if(calc.schneiderA){ calc.hand=true; }
-    else { calc.schwarzA=false; calc.ouvert=false; }
+    else { calc.schwarzA=false; calc.ouvert=false; calc.spitzeA=false; }
   } else if(key==='schwarzA'){
     calc.schwarzA=!calc.schwarzA;
     if(calc.schwarzA){ calc.hand=true; calc.schneiderA=true; }
@@ -346,6 +347,7 @@ function toggleOpt(key){
   updateAnsagenUI();
   syncFactor(); updateCalcResult();
 }
+```
 
 function toggleDbl(key){
   calc[key]=!calc[key];
