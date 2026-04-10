@@ -254,7 +254,7 @@ function setType(tp){
       });
     }
   }
-  updateCalcResult(); updatePanelHeight();
+  updateAnsagenUI(); updateCalcResult();
 }
 
 function setFarbe(i){
