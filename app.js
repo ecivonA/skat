@@ -258,10 +258,42 @@ function hideToast(){ document.getElementById('toast').classList.remove('show');
 
 // ===== RESET =====
 function closeReset(){ document.getElementById('resetModal').classList.remove('show'); }
+
 function confirmReset(){
-  openRoundIdx=-1;
-  state.rounds=[]; state.totals=state.has4?[0,0,0,0]:[0,0,0]; state.queue=[];
-  save(); resetPanel(); renderAll(); closeReset(); updateQueueUI();
+  const isHard = document.getElementById('resetModal').dataset.hard === 'true';
+  if(isHard){
+    // Alles löschen: State, Namen, Geld, Theme, Font, Sprache
+    try{ localStorage.clear(); }catch(e){}
+    state={ names:['Spieler 1','Spieler 2','Spieler 3'], rounds:[], totals:[0,0,0], lang:'de', has4:false, queue:[] };
+    moneySettings={ rate:0, currency:'€' };
+    lang='de';
+    applyTheme(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
+    const html=document.documentElement;
+    html.classList.remove('zoom-2','zoom-3','zoom-4'); html.classList.add('zoom-2');
+    const fontBtn=document.getElementById('fontBtn'); if(fontBtn) fontBtn.textContent='A';
+    setLang('de');
+  } else {
+    // Nur Runden löschen
+    openRoundIdx=-1;
+    state.rounds=[]; state.totals=state.has4?[0,0,0,0]:[0,0,0]; state.queue=[];
+    save();
+  }
+  resetPanel(); renderAll(); closeReset(); updateQueueUI();
+}
+
+function openResetDialog(hard){
+  const modal = document.getElementById('resetModal');
+  modal.dataset.hard = hard ? 'true' : 'false';
+  if(hard){
+    document.getElementById('modalTitle').textContent  = '⚠️ Alles zurücksetzen?';
+    document.getElementById('modalText').textContent   = 'Namen, Währung, Sprache, Theme – wirklich alles wird gelöscht.';
+    document.getElementById('modalConfirm').textContent= 'Alles löschen';
+  } else {
+    document.getElementById('modalTitle').textContent  = t('modalTitle');
+    document.getElementById('modalText').textContent   = t('modalText');
+    document.getElementById('modalConfirm').textContent= t('loeschen');
+  }
+  modal.classList.add('show');
 }
 
 // ===== EINSTELLUNGEN =====
@@ -303,7 +335,7 @@ document.addEventListener('click', ()=>{
 
 function setLang(l){
   lang=l; state.lang=l; save();
-  const flags={'de':'🇩🇪','en':'🇬🇧','fr':'🇫🇷','es':'🇪🇸','it':'🇮🇹','da':'🇩🇰','th':'🇹🇭','vi':'🇻🇳'};
+  const flags={'de':'🇩🇪','en':'🇬🇧','fr':'🇫🇷','es':'🇪🇸','it':'🇮🇹','da':'🇩🇰','th':'🇹🇭','vi':'🇻🇳','ja':'🇯🇵'};
   document.getElementById('langFlag').textContent=flags[l]||'🌐';
   document.getElementById('langCode').textContent=l.toUpperCase();
   document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active',o.dataset.lang===l));
@@ -349,17 +381,12 @@ let wakeLockSentinel=null;
 async function toggleWakeLock(){
   const btn=document.getElementById('wakeLockBtn');
   if(wakeLockSentinel){
-    await wakeLockSentinel.release(); wakeLockSentinel=null;
-    btn.style.opacity='0.4'; btn.style.background=''; btn.style.borderColor=''; btn.style.color='';
+    await wakeLockSentinel.release(); wakeLockSentinel=null; btn.style.opacity='0.4';
   } else {
     try{
       wakeLockSentinel=await navigator.wakeLock.request('screen');
-      btn.style.opacity='1'; btn.style.background='rgba(46,204,113,.25)';
-      btn.style.borderColor='var(--green)'; btn.style.color='var(--green)';
-      wakeLockSentinel.addEventListener('release',()=>{
-        wakeLockSentinel=null;
-        btn.style.opacity='0.4'; btn.style.background=''; btn.style.borderColor=''; btn.style.color='';
-      });
+      btn.style.opacity='1';
+      wakeLockSentinel.addEventListener('release',()=>{ wakeLockSentinel=null; btn.style.opacity='0.4'; });
     }catch(e){}
   }
 }
@@ -426,7 +453,7 @@ if('wakeLock' in navigator){
 
 // Sprach-UI initialisieren (Flag + aktive Option markieren)
 {
-  const flags={'de':'🇩🇪','en':'🇬🇧','fr':'🇫🇷','es':'🇪🇸','it':'🇮🇹','da':'🇩🇰','th':'🇹🇭','vi':'🇻🇳'};
+  const flags={'de':'🇩🇪','en':'🇬🇧','fr':'🇫🇷','es':'🇪🇸','it':'🇮🇹','da':'🇩🇰','th':'🇹🇭','vi':'🇻🇳','ja':'🇯🇵'};
   const flagEl=document.getElementById('langFlag');
   const codeEl=document.getElementById('langCode');
   if(flagEl) flagEl.textContent=flags[lang]||'🌐';
@@ -462,7 +489,10 @@ if(document.getElementById('inputPanel')){
   }
 
   // Event Listener
-  document.getElementById('resetBtn').addEventListener('click', ()=>document.getElementById('resetModal').classList.add('show'));
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    const noRounds = state.rounds.length === 0;
+    openResetDialog(noRounds);
+  });
   document.getElementById('undoBtn').addEventListener('click', undoLast);
   document.getElementById('toastUndo').onclick = function(){
     if(!lastDeleted) return;
