@@ -421,6 +421,12 @@ html[data-theme="light"] .queue-btn.bock-active   { border-color: #e8b04b; backg
 html[data-theme="light"] .queue-btn.bock-active .queue-count { color: #e8b04b; }
 html[data-theme="light"] .queue-btn.ramsch-active { border-color: #e74c3c; background: rgba(231,76,60,.3);  color: #e74c3c; }
 html[data-theme="light"] .queue-btn.ramsch-active .queue-count { color: #e74c3c; }
+html[data-theme="light"] .tab-queue-btn { background: #1a3a8f; border-color: #1a3a8f; color: #ffffff; }
+html[data-theme="light"] .tab-queue-btn .queue-count { color: #ffffff; font-weight: 700; }
+html[data-theme="light"] .tab-queue-btn.bock-active   { background: rgba(232,176,75,.2); border-color: #e8b04b; color: #b07820; }
+html[data-theme="light"] .tab-queue-btn.bock-active .queue-count { color: #b07820; }
+html[data-theme="light"] .tab-queue-btn.ramsch-active { background: rgba(231,76,60,.15); border-color: #e74c3c; color: #8f1a1a; }
+html[data-theme="light"] .tab-queue-btn.ramsch-active .queue-count { color: #8f1a1a; }
 
 /* ===== NEUE BUTTON-STILE ===== */
 .btn-sym { font-size:16px; display:block; line-height:1.2; }
