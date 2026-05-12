@@ -935,6 +935,7 @@ function addLongPress(el, cb){
   el.addEventListener('mousemove', ()=>{ moved=true; if(timer){clearTimeout(timer);timer=null;} });
   el.addEventListener('mouseup',   ()=>{ if(timer){clearTimeout(timer);timer=null;} });
   el.addEventListener('mouseleave',()=>{ if(timer){clearTimeout(timer);timer=null;} });
+  el.addEventListener('dblclick',  e=>{ if(isTouchDevice) return; e.stopPropagation(); cb(); });
 }
 
 // ===== EDIT ROUND =====
