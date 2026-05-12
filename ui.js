@@ -254,7 +254,7 @@ function setType(tp){
       });
     }
   }
-  updateAnsagenUI(); updateCalcResult();
+  updateCalcResult(); updatePanelHeight();
 }
 
 function setFarbe(i){
@@ -309,11 +309,11 @@ function updateAnsagenUI(){
 function toggleOpt(key){
   if(key==='hand'){
     calc.hand=!calc.hand;
-    if(!calc.hand){ calc.schneiderA=false; calc.schwarzA=false; calc.ouvert=false; calc.spitzeA=false; }
+    if(!calc.hand){ calc.schneiderA=false; calc.schwarzA=false; calc.ouvert=false; }
   } else if(key==='schneiderA'){
     calc.schneiderA=!calc.schneiderA;
     if(calc.schneiderA){ calc.hand=true; }
-    else { calc.schwarzA=false; calc.ouvert=false; calc.spitzeA=false; }
+    else { calc.schwarzA=false; calc.ouvert=false; }
   } else if(key==='schwarzA'){
     calc.schwarzA=!calc.schwarzA;
     if(calc.schwarzA){ calc.hand=true; calc.schneiderA=true; }
@@ -634,7 +634,7 @@ function backToStage1(){
     nullVal:sc.nullVal||23, jackCount:sc.jackCount||1, jackDir:sc.jackDir||'mit',
     hand:sc.hand||false, schneider:false, schneiderA:sc.schneiderA||false,
     schwarz:false, schwarzA:sc.schwarzA||false, ouvert:sc.ouvert||false,
-    spitze:false, spitzeA:sc.spitzeA||false,
+    spitze:false, spitzeA:false,
     kontra:false, re:false, bock:false, jungfrau:sc.jungfrau||false,
     geschoben:sc.geschoben||0, verloren:false};
   selectedPlayers=[...r.players];
@@ -668,7 +668,7 @@ function vormerken(){
     nullHand:calc.nullHand||false, nullOuvert:calc.nullOuvert||false, nullRevol:calc.nullRevol||false,
     hand:calc.hand, schneider:calc.schneider, schneiderA:calc.schneiderA,
     schwarz:calc.schwarz, schwarzA:calc.schwarzA, ouvert:calc.ouvert,
-    spitzeA:calc.spitzeA, geschoben:calc.geschoben, jungfrau:calc.jungfrau,
+    spitzeA:false, geschoben:calc.geschoben, jungfrau:calc.jungfrau,
     jackCount:calc.jackCount, jackDir:calc.jackDir, factor:calc.factor
   };
   if(hasOpenRound()){
@@ -697,7 +697,7 @@ function vormerken(){
     nullHand:sc2.nullHand||false, nullOuvert:sc2.nullOuvert||false, nullRevol:sc2.nullRevol||false,
     jackCount:1, jackDir:'mit', hand:sc2.hand, schneider:false, schneiderA:sc2.schneiderA,
     schwarz:false, schwarzA:sc2.schwarzA, ouvert:sc2.ouvert,
-    spitze:false, spitzeA:sc2.spitzeA||false, kontra:false, re:false, bock:false,
+    spitze:false, spitzeA:false, kontra:false, re:false, bock:false,
     jungfrau:sc2.jungfrau, geschoben:sc2.geschoben, verloren:false};
   const suitType=sc2.type==='farbe' ? ['karo','herz','pik','kreuz'][sc2.farbeIdx] : sc2.type;
   panelOpen=true;
