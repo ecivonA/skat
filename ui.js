@@ -323,21 +323,30 @@ function toggleOpt(key){
     if(calc.ouvert){ calc.hand=true; calc.schneiderA=true; calc.schwarzA=true; }
     document.getElementById('dOuvert').classList.toggle('active', calc.ouvert);
   } else if(key==='spitzeA'){
+    // SpitzeA ist vollständig unabhängig von Hand/Schneider/Schwarz/Ouvert
     calc.spitzeA=!calc.spitzeA;
     document.getElementById('dSpitzeA').classList.toggle('active', calc.spitzeA);
+    syncFactor(); updateCalcResult();
+    return; // updateAnsagenUI nicht aufrufen – würde nichts kaputt machen, aber unnötig
   } else if(key==='spitze'){
     calc.spitze=!calc.spitze;
     document.getElementById('dSpitze').classList.toggle('active', calc.spitze);
+    syncFactor(); updateCalcResult();
+    return;
   } else if(key==='schneider'){
     calc.schneider=!calc.schneider;
     if(!calc.schneider) calc.schwarz=false;
     document.getElementById('dSchneider').classList.toggle('active', calc.schneider);
     const dsw=document.getElementById('dSchwarz'); if(dsw) dsw.classList.toggle('active', calc.schwarz);
+    syncFactor(); updateCalcResult();
+    return;
   } else if(key==='schwarz'){
     calc.schwarz=!calc.schwarz;
     if(calc.schwarz) calc.schneider=true;
     document.getElementById('dSchneider').classList.toggle('active', calc.schneider);
     const dsw=document.getElementById('dSchwarz'); if(dsw) dsw.classList.toggle('active', calc.schwarz);
+    syncFactor(); updateCalcResult();
+    return;
   } else {
     calc[key]=!calc[key];
     const el=document.getElementById('d'+key.charAt(0).toUpperCase()+key.slice(1));
@@ -679,7 +688,7 @@ function backToStage1(){
 
 function vormerken(){
   if(editRoundIdx>=0){
-    showStage2();
+    showStage2(true);  // Edit: Stage-2-Werte aus calc beibehalten
     document.getElementById('addBtn').textContent=t('speichern');
     document.getElementById('addBtn').classList.add('edit-mode');
     document.getElementById('addBtn').style.display='';
@@ -699,7 +708,7 @@ function vormerken(){
     nullHand:calc.nullHand||false, nullOuvert:calc.nullOuvert||false, nullRevol:calc.nullRevol||false,
     hand:calc.hand, schneider:calc.schneider, schneiderA:calc.schneiderA,
     schwarz:calc.schwarz, schwarzA:calc.schwarzA, ouvert:calc.ouvert,
-    spitzeA:false, geschoben:calc.geschoben, jungfrau:calc.jungfrau,
+    spitzeA:calc.spitzeA||false, geschoben:calc.geschoben, jungfrau:calc.jungfrau,
     jackCount:calc.jackCount, jackDir:calc.jackDir, factor:calc.factor
   };
   if(hasOpenRound()){
