@@ -21,6 +21,7 @@ function togglePanel(){
       nullVal:sc.nullVal||23, jackCount:sc.jackCount||1, jackDir:sc.jackDir||'mit',
       hand:sc.hand||false, schneider:false, schneiderA:sc.schneiderA||false,
       schwarz:false, schwarzA:sc.schwarzA||false, ouvert:sc.ouvert||false,
+      spitzeA:sc.spitzeA||false,
       kontra:false, re:false, bock:false, jungfrau:sc.jungfrau||false,
       geschoben:sc.geschoben||0, verloren:false};
     setType(suitType||'');
@@ -630,6 +631,9 @@ function showStage2(restoreStage2){
       const el=document.getElementById(id);
       if(el){ el.classList.remove('active'); el.style.display=''; }
     });
+    // dSpitzeA (Stage-1-Button) ebenfalls explizit syncen – schützt vor dirty State
+    const dSpitzeAEl=document.getElementById('dSpitzeA');
+    if(dSpitzeAEl) dSpitzeAEl.classList.toggle('active', !!calc.spitzeA);
 
     calc.schneider=false; calc.schwarz=false; calc.spitze=false;
     calc.kontra=false; calc.re=false; calc.bock=false; calc.verloren=false;
@@ -674,7 +678,7 @@ function backToStage1(){
     nullVal:sc.nullVal||23, jackCount:sc.jackCount||1, jackDir:sc.jackDir||'mit',
     hand:sc.hand||false, schneider:false, schneiderA:sc.schneiderA||false,
     schwarz:false, schwarzA:sc.schwarzA||false, ouvert:sc.ouvert||false,
-    spitze:false, spitzeA:false,
+    spitze:false, spitzeA:sc.spitzeA||false,
     kontra:false, re:false, bock:false, jungfrau:sc.jungfrau||false,
     geschoben:sc.geschoben||0, verloren:false};
   selectedPlayers=[...r.players];
@@ -758,8 +762,9 @@ function openRoundForEdit(idx){
   calc={type:sc.type, farbeIdx:sc.farbeIdx, factor:sc.factor, nullVal:sc.nullVal,
     nullHand:sc.nullHand||false, nullOuvert:sc.nullOuvert||false, nullRevol:sc.nullRevol||false,
     jackCount:sc.jackCount||1, jackDir:sc.jackDir||'mit',
-    hand:sc.hand, schneider:sc.schneider, schneiderA:sc.schneiderA,
-    schwarz:sc.schwarz, schwarzA:sc.schwarzA, ouvert:sc.ouvert,
+    hand:sc.hand, schneider:sc.schneider||false, schneiderA:sc.schneiderA,
+    schwarz:sc.schwarz||false, schwarzA:sc.schwarzA, ouvert:sc.ouvert,
+    spitzeA:sc.spitzeA||false,
     kontra:false, re:false, bock:false,
     jungfrau:sc.jungfrau, geschoben:sc.geschoben, verloren:false};
   selectedPlayers=[...r.players];
