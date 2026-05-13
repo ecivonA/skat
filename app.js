@@ -171,6 +171,19 @@ function addRound(){
     r.value=value;
     r.open=false; delete r.open;
     r.typeKey=getTypeKey()||(r.savedCalc?r.typeKey:'');
+    // Stage-2-Werte in savedCalc nachführen (wurden in vormerken() noch nicht gespeichert)
+    if(r.savedCalc){
+      r.savedCalc.schneider  = calc.schneider;
+      r.savedCalc.schwarz    = calc.schwarz;
+      r.savedCalc.spitze     = calc.spitze;
+      r.savedCalc.kontra     = calc.kontra;
+      r.savedCalc.re         = calc.re;
+      r.savedCalc.bock       = calc.bock;
+      r.savedCalc.verloren   = calc.verloren;
+      r.savedCalc.jackCount  = calc.jackCount;
+      r.savedCalc.jackDir    = calc.jackDir;
+      r.savedCalc.factor     = calc.factor;
+    }
     r.label=getShortLabel()||r.label;
     const queueBefore=r.queueBefore||[...state.queue];
     const nextQ=queueBefore[0];
@@ -218,7 +231,17 @@ function addRound(){
     state.rounds.push({
       players:isLeer?[]:[...selectedPlayers],
       value, label, typeKey, noPlayer, isRamschGH, aussetzer,
-      totals:[...newTotals], queueBefore, wasBock, wasRamsch
+      totals:[...newTotals], queueBefore, wasBock, wasRamsch,
+      savedCalc:{
+        type:calc.type, farbeIdx:calc.farbeIdx, nullVal:calc.nullVal,
+        nullHand:calc.nullHand||false, nullOuvert:calc.nullOuvert||false, nullRevol:calc.nullRevol||false,
+        hand:calc.hand, schneider:calc.schneider, schneiderA:calc.schneiderA,
+        schwarz:calc.schwarz, schwarzA:calc.schwarzA, ouvert:calc.ouvert,
+        spitze:calc.spitze, spitzeA:calc.spitzeA,
+        kontra:calc.kontra, re:calc.re, bock:calc.bock,
+        jungfrau:calc.jungfrau, geschoben:calc.geschoben, verloren:calc.verloren,
+        jackCount:calc.jackCount, jackDir:calc.jackDir, factor:calc.factor
+      }
     });
     state.totals=newTotals; save();
   }
