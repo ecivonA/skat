@@ -554,7 +554,7 @@ function buildSummaryText(){
   return parts.join(' · ');
 }
 
-function showStage2(){
+function showStage2(restoreStage2){
   document.getElementById('stage1').style.display='none';
   document.getElementById('stage2').style.display='';
   document.getElementById('stage2summaryText').textContent=buildSummaryText();
@@ -582,40 +582,71 @@ function showStage2(){
   const showNormal=calc.type!==''&&calc.type!=='leer'&&calc.type!=='ramsch';
   document.getElementById('detailNormal').style.display=showNormal?'':'none';
 
-  // Alle Stage-2-Buttons zurücksetzen
-  ['dSchneider','dSchwarz','dSpitze','dKontra','dRe','dBock','dVerloren'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){ el.classList.remove('active'); el.style.display=''; }
-  });
-
   // Kontra/Re bei RGH und Ramsch ausblenden; Bock bei RGH ausblenden
   document.getElementById('dKontra').style.display=(isRGH||isRamsch)?'none':'';
   document.getElementById('dRe').style.display=(isRGH||isRamsch)?'none':'';
   document.getElementById('dBock').style.display=isRGH?'none':'';
 
-  calc.schneider=false; calc.schwarz=false; calc.spitze=false;
-  calc.kontra=false; calc.re=false; calc.bock=false; calc.verloren=false;
-
-  // Bock-Vorbelegung aus Queue (alle Typen außer RGH)
-  if(!isRGH && isBockRunde){
-    calc.bock=true;
-    const bEl=document.getElementById('dBock');
-    if(bEl) bEl.classList.add('active');
-  }
-
-  if(isFarbeGrand){
-    const sA=calc.schneiderA, swA=calc.schwarzA;
-    if(sA||swA){ calc.schneider=true; document.getElementById('dSchneider').classList.add('active'); }
-    if(swA){ calc.schwarz=true; document.getElementById('dSchwarz').classList.add('active'); }
-    document.getElementById('dSchneider').style.display=sA?'none':'';
-    document.getElementById('dSchwarz').style.display=swA?'none':'';
-    if(calc.spitzeA){
-      calc.spitze=true;
-      document.getElementById('dSpitze').classList.add('active');
-      document.getElementById('dSpitze').style.display='none';
+  if(restoreStage2){
+    // ── Edit-Modus: gespeicherte Stage-2-Werte aus calc ins DOM übertragen ──
+    // Erst alle zurücksetzen, dann selektiv wiederherstellen
+    ['dSchneider','dSchwarz','dSpitze','dKontra','dRe','dBock','dVerloren'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.classList.remove('active');
+    });
+    if(isFarbeGrand){
+      const sA=calc.schneiderA, swA=calc.schwarzA;
+      // Ansage-implizierte Werte
+      if(sA||swA){ calc.schneider=true; }
+      if(swA){ calc.schwarz=true; }
+      // Schneider/Schwarz-Button ausblenden wenn durch Ansage schon impliziert
+      document.getElementById('dSchneider').style.display=sA?'none':'';
+      document.getElementById('dSchwarz').style.display=swA?'none':'';
+      if(calc.spitzeA){ calc.spitze=true; document.getElementById('dSpitze').style.display='none'; }
+      if(swA) document.getElementById('stage2Erreicht').style.display='none';
+      // Buttons aktivieren nach gespeichertem Zustand
+      if(calc.schneider) document.getElementById('dSchneider').classList.add('active');
+      if(calc.schwarz)   document.getElementById('dSchwarz').classList.add('active');
+      if(calc.spitze)    document.getElementById('dSpitze').classList.add('active');
     }
-    if(swA) document.getElementById('stage2Erreicht').style.display='none';
+    if(calc.kontra)   { const el=document.getElementById('dKontra'); if(el) el.classList.add('active'); }
+    if(calc.re)       { const el=document.getElementById('dRe');     if(el) el.classList.add('active'); }
+    if(calc.bock)     { const el=document.getElementById('dBock');   if(el) el.classList.add('active'); }
+    if(calc.verloren) {
+      const el=document.getElementById('dVerloren'); if(el) el.classList.add('active');
+      // sign aus savedCalc (bereits durch startEditRound gesetzt)
+    }
+  } else {
+    // ── Normale Stage 1→2 Transition: alles zurücksetzen ──
+    ['dSchneider','dSchwarz','dSpitze','dKontra','dRe','dBock','dVerloren'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){ el.classList.remove('active'); el.style.display=''; }
+    });
+
+    calc.schneider=false; calc.schwarz=false; calc.spitze=false;
+    calc.kontra=false; calc.re=false; calc.bock=false; calc.verloren=false;
+
+    // Bock-Vorbelegung aus Queue (alle Typen außer RGH)
+    if(!isRGH && isBockRunde){
+      calc.bock=true;
+      const bEl=document.getElementById('dBock');
+      if(bEl) bEl.classList.add('active');
+    }
+
+    if(isFarbeGrand){
+      const sA=calc.schneiderA, swA=calc.schwarzA;
+      if(sA||swA){ calc.schneider=true; document.getElementById('dSchneider').classList.add('active'); }
+      if(swA){ calc.schwarz=true; document.getElementById('dSchwarz').classList.add('active'); }
+      document.getElementById('dSchneider').style.display=sA?'none':'';
+      document.getElementById('dSchwarz').style.display=swA?'none':'';
+      if(calc.spitzeA){
+        calc.spitze=true;
+        document.getElementById('dSpitze').classList.add('active');
+        document.getElementById('dSpitze').style.display='none';
+      }
+      if(swA) document.getElementById('stage2Erreicht').style.display='none';
+    }
   }
+
   refreshJackRow();
   syncFactor(); updateCalcResult(); updatePanelHeight();
 }
@@ -935,6 +966,7 @@ function addLongPress(el, cb){
   el.addEventListener('mousemove', ()=>{ moved=true; if(timer){clearTimeout(timer);timer=null;} });
   el.addEventListener('mouseup',   ()=>{ if(timer){clearTimeout(timer);timer=null;} });
   el.addEventListener('mouseleave',()=>{ if(timer){clearTimeout(timer);timer=null;} });
+  el.addEventListener('dblclick',  e=>{ if(isTouchDevice) return; e.stopPropagation(); cb(); });
 }
 
 // ===== EDIT ROUND =====
@@ -982,14 +1014,49 @@ function startEditRound(idx){
     b.style.opacity=(blockedRGH||blockedRamsch)?'0.25':'';
   });
   setType(suitType);
+
   if(sc.type==='ramsch'){
     const ri=document.getElementById('ramschInput');
-    if(ri) ri.value=Math.abs(r.value)||'';
-    if(isDurchActive()){ ri.value='120'; ri.disabled=true; ri.style.opacity='0.5'; }
+    if(ri){
+      // Basiswert rekonstruieren: Gesamtwert durch alle Ramsch-Multiplikatoren dividieren
+      let absVal=Math.abs(r.value);
+      let m=Math.pow(2, sc.geschoben||0);
+      if(sc.jungfrau) m*=2;
+      if(sc.kontra)   m*=2;
+      if(sc.re)       m*=2;
+      if(sc.bock)     m*=2;
+      if(sc.verloren) m*=2;
+      const base=m>0?Math.round(absVal/m):absVal;
+      ri.value=base||'';
+    }
+    // Ramsch-Durch wiederherstellen
+    if(isDurchActive()){
+      const ri2=document.getElementById('ramschInput');
+      if(ri2){ ri2.value='120'; ri2.disabled=true; ri2.style.opacity='0.5'; }
+    }
+    // Geschoben-Stepper und Pips aktualisieren
+    document.getElementById('geschobenVal').textContent=sc.geschoben||0;
+    renderGeschobenPips();
+    // Jungfrau-Button aktivieren
+    const djBtn=document.getElementById('dJungfrau');
+    if(djBtn) djBtn.classList.toggle('active', !!(sc.jungfrau));
+    // Kontra/Re/Bock bei Ramsch (Stage-1-Buttons)
+    const dBockR=document.getElementById('dBockRamsch');
+    if(dBockR) dBockR.classList.toggle('active', !!(sc.bock));
   }
+
   refreshJackRow(); buildNullBtns();
-  document.getElementById('stage1').style.display='';
-  document.getElementById('stage2').style.display='none';
+
+  // Edit öffnet immer direkt in Stage 2 (mit wiederhergestellten Werten)
+  // Ausnahme: Ramsch und Leer bleiben in Stage 1
+  const isDirectStage1=sc.type==='ramsch'||sc.type==='leer';
+  if(isDirectStage1){
+    document.getElementById('stage1').style.display='';
+    document.getElementById('stage2').style.display='none';
+  } else {
+    showStage2(true);  // true = Stage-2-Werte aus calc wiederherstellen
+  }
+
   updateAnsagenUI();
   document.getElementById('addBtn').textContent=t('speichern');
   document.getElementById('addBtn').classList.add('edit-mode');
