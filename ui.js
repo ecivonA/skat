@@ -821,6 +821,7 @@ function updateHeaders(){
       setup.innerHTML=`<button onclick="remove4thPlayer()" style="background:rgba(200,75,49,.1);border:1px dashed var(--accent2);color:var(--accent2);border-radius:8px;padding:8px 16px;font-family:'Source Code Pro',monospace;font-size:12px;cursor:pointer">✕ ${t('vierterSpielerLoeschen')}</button>`;
     }
   } else { setup.innerHTML=''; }
+  initColDrag();
 }
 
 function add4thPlayer(){ state.has4=true; if(!state.names[3]) state.names[3]='Spieler 4'; if(state.totals.length<4) state.totals.push(0); save(); renderAll(); }
@@ -1142,4 +1143,116 @@ function editName(i){
     if(e.key==='Enter'){ e.preventDefault(); inp.blur(); }
     if(e.key==='Escape'){ committed=true; th.textContent=cur; }
   });
+}
+
+// ===== COLUMN DRAG & DROP =====
+let colDragState = null;
+
+function initColDrag(){
+  const n = state.has4 ? 4 : 3;
+  for(let i = 0; i < 4; i++){
+    const th = document.getElementById('th'+i);
+    if(!th) continue;
+    // Guard: nur einmal initialisieren
+    if(th.dataset.dragInit) continue;
+    th.dataset.dragInit = '1';
+    // Kontextmenü unterdrücken
+    th.addEventListener('contextmenu', e => { if(colDragState || th._dragTimer) e.preventDefault(); });
+    _bindColDrag(th, i);
+  }
+}
+
+function _bindColDrag(th, idx){
+  let timer = null, dragging = false, moved = false, isTouchEvt = false;
+
+  function onStart(clientX, clientY){
+    moved = false;
+    timer = setTimeout(() => {
+      timer = null;
+      dragging = true;
+      _beginColDrag(idx, clientX, clientY);
+    }, 480);
+    th._dragTimer = timer;
+  }
+  function onMove(clientX, clientY){
+    moved = true;
+    if(timer){ clearTimeout(timer); timer = null; th._dragTimer = null; }
+    if(dragging) _updateColDrag(clientX, clientY);
+  }
+  function onEnd(){
+    if(timer){ clearTimeout(timer); timer = null; th._dragTimer = null; }
+    if(dragging){ dragging = false; _endColDrag(); }
+  }
+
+  // Touch
+  th.addEventListener('touchstart', e => {
+    isTouchEvt = true;
+    onStart(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive: true});
+  th.addEventListener('touchmove', e => {
+    onMove(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive: true});
+  th.addEventListener('touchend',    onEnd);
+  th.addEventListener('touchcancel', onEnd);
+
+  // Mouse (Desktop-Fallback)
+  th.addEventListener('mousedown', e => {
+    if(isTouchEvt || e.button !== 0) return;
+    onStart(e.clientX, e.clientY);
+    const onMM = e2 => onMove(e2.clientX, e2.clientY);
+    const onMU = ()  => { onEnd(); document.removeEventListener('mousemove', onMM); document.removeEventListener('mouseup', onMU); };
+    document.addEventListener('mousemove', onMM);
+    document.addEventListener('mouseup',   onMU);
+  });
+}
+
+function _beginColDrag(idx, x, y){
+  colDragState = { from: idx, to: idx };
+  document.getElementById('th'+idx).classList.add('col-drag-source');
+  // Haptic (wo verfügbar)
+  try{ if(navigator.vibrate) navigator.vibrate(40); }catch(e){}
+  // Ghost-Label erzeugen
+  const ghost = document.createElement('div');
+  ghost.id = 'colDragGhost';
+  ghost.className = 'col-drag-ghost';
+  ghost.textContent = state.names[idx] || ('Spieler '+(idx+1));
+  document.body.appendChild(ghost);
+  _moveGhost(x, y);
+}
+
+function _moveGhost(x, y){
+  const g = document.getElementById('colDragGhost');
+  if(g){ g.style.left = x+'px'; g.style.top  = y+'px'; }
+}
+
+function _updateColDrag(x, y){
+  if(!colDragState) return;
+  _moveGhost(x, y);
+  const ghost = document.getElementById('colDragGhost');
+  if(ghost) ghost.style.pointerEvents = 'none';
+  const el = document.elementFromPoint(x, y);
+  if(ghost) ghost.style.pointerEvents = '';
+  const n = state.has4 ? 4 : 3;
+  let newTo = colDragState.to;
+  for(let i = 0; i < n; i++){
+    const th = document.getElementById('th'+i);
+    if(th && (th === el || th.contains(el))){ newTo = i; break; }
+  }
+  if(newTo !== colDragState.to){
+    document.querySelectorAll('.col-drag-target').forEach(e => e.classList.remove('col-drag-target'));
+    if(newTo !== colDragState.from) document.getElementById('th'+newTo).classList.add('col-drag-target');
+    colDragState.to = newTo;
+  }
+}
+
+function _endColDrag(){
+  if(!colDragState) return;
+  const { from, to } = colDragState;
+  colDragState = null;
+  document.querySelectorAll('.col-drag-source,.col-drag-target').forEach(e => {
+    e.classList.remove('col-drag-source','col-drag-target');
+  });
+  const ghost = document.getElementById('colDragGhost');
+  if(ghost) ghost.remove();
+  if(from !== to) swapPlayers(from, to);
 }
