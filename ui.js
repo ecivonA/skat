@@ -63,6 +63,8 @@ function resetPanel(){
   panelOpen=false;
   document.getElementById('inputPanel').classList.remove('open');
   updateStageUI(0);
+  updatePanelHeight();   // <--- hinzufügen
+  
 }
 
 function updateStageUI(stage){
