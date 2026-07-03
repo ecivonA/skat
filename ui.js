@@ -63,8 +63,6 @@ function resetPanel(){
   panelOpen=false;
   document.getElementById('inputPanel').classList.remove('open');
   updateStageUI(0);
-  updatePanelHeight();   // <--- hinzufügen
-  
 }
 
 function updateStageUI(stage){
@@ -189,6 +187,11 @@ function setType(tp){
   const isSuit = tp in SUIT_IDX;
   if(isSuit){ calc.farbeIdx=SUIT_IDX[tp]; calc.type='farbe'; }
   else { calc.type=tp; }
+
+  // SpitzeA beim Typwechsel immer zurücksetzen – verhindert dirty State
+  calc.spitzeA=false;
+  const dSpAel=document.getElementById('dSpitzeA');
+  if(dSpAel) dSpAel.classList.remove('active');
 
   if(tp !== 'ramsch'){
     document.getElementById('ramschDurch').classList.remove('active');
@@ -1163,32 +1166,25 @@ function initColDrag(){
 function _bindColDrag(th, idx){
   let timer = null, isTouchEvt = false;
 
-  // ── Touch: Long-Press erkennen ──
   th.addEventListener('touchstart', e => {
     isTouchEvt = true;
-    const t = e.touches[0];
-    // Wenn Finger bewegt, Timer abbrechen (User scrollt)
-    const startX = t.clientX, startY = t.clientY;
-    function onEarlyMove(ev){
-      const dx = ev.touches[0].clientX - startX;
-      const dy = ev.touches[0].clientY - startY;
-      if(Math.abs(dx) > 6 || Math.abs(dy) > 6){
-        clearTimeout(timer); timer = null;
-        th.removeEventListener('touchmove', onEarlyMove);
-      }
+    const startX = e.touches[0].clientX, startY = e.touches[0].clientY;
+    function onMove(ev){
+      const dx = ev.touches[0].clientX - startX, dy = ev.touches[0].clientY - startY;
+      if(Math.abs(dx) > 8 || Math.abs(dy) > 8){ clearTimeout(timer); timer = null; th.removeEventListener('touchmove', onMove); }
     }
-    th.addEventListener('touchmove', onEarlyMove, {passive: true});
+    th.addEventListener('touchmove', onMove, {passive:true});
     timer = setTimeout(() => {
-      th.removeEventListener('touchmove', onEarlyMove);
+      th.removeEventListener('touchmove', onMove);
       timer = null;
       _beginColDrag(idx, startX, startY);
     }, 480);
-  }, {passive: true});
+  }, {passive:true});
 
   th.addEventListener('touchend',    () => { if(timer){ clearTimeout(timer); timer = null; } });
   th.addEventListener('touchcancel', () => { if(timer){ clearTimeout(timer); timer = null; } });
 
-  // ── Mouse (Desktop) ──
+  // Mouse (Desktop)
   th.addEventListener('mousedown', e => {
     if(isTouchEvt || e.button !== 0) return;
     timer = setTimeout(() => {
@@ -1212,21 +1208,19 @@ function _beginColDrag(idx, x, y){
   colDragState = { from: idx, to: idx };
   document.getElementById('th'+idx).classList.add('col-drag-source');
   try{ if(navigator.vibrate) navigator.vibrate(40); }catch(e){}
-  // Ghost
   const ghost = document.createElement('div');
   ghost.id = 'colDragGhost';
   ghost.className = 'col-drag-ghost';
   ghost.textContent = state.names[idx] || ('Spieler '+(idx+1));
   document.body.appendChild(ghost);
   _moveGhost(x, y);
-  // Nicht-passive Document-Listener: verhindert Scroll UND Textauswahl während Drag
   document.addEventListener('touchmove',   _onDragMove,   {passive: false});
   document.addEventListener('touchend',    _onDragEnd,    {passive: true});
   document.addEventListener('touchcancel', _onDragEnd,    {passive: true});
 }
 
 function _onDragMove(e){
-  e.preventDefault(); // ← verhindert Scroll + Android-Textauswahl
+  e.preventDefault();
   _updateColDrag(e.touches[0].clientX, e.touches[0].clientY);
 }
 function _onDragEnd(){
