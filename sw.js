@@ -1,5 +1,5 @@
 // Version hochzählen bei jeder Änderung an HTML/JS/CSS
-const CACHE = 'skat-v2.16a';
+const CACHE = 'skat-v2.16b';
 
 const FONT_CACHE = 'skat-fonts-v1';
 
