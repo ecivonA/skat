@@ -260,10 +260,8 @@ function setType(tp){
       });
     }
   }
-  updateCalcResult(); updatePanelHeight();
+  updateCalcResult(); updateAnsagenUI(); updatePanelHeight();
 }
-
-function setFarbe(i){
   calc.farbeIdx=i;
   document.querySelectorAll('.farbe-btn').forEach(b=>b.classList.toggle('active', +b.dataset.fi===i));
   updateCalcResult();
@@ -309,7 +307,7 @@ function updateAnsagenUI(){
   if(dSwA) dSwA.classList.toggle('implied', !swA && ov);
   document.getElementById('dOuvert').classList.toggle('implied', false);
   const dSpitzeA=document.getElementById('dSpitzeA');
-  if(dSpitzeA) dSpitzeA.classList.toggle('active', calc.spitzeA);
+  if(dSpitzeA) dSpitzeA.classList.toggle('active', !!calc.spitzeA);
 }
 
 function toggleOpt(key){
@@ -374,6 +372,10 @@ function toggleDbl(key){
     sign=-1;
     const b=document.getElementById('signBtn');
     b.textContent='−'; b.className='sign-btn negative';
+  } else if(key==='verloren' && !calc[key] && calc.type!=='ramsch'){
+    sign=1;
+    const b=document.getElementById('signBtn');
+    b.textContent='+'; b.className='sign-btn positive';
   }
   updateCalcResult();
 }
