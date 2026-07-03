@@ -351,24 +351,7 @@ function swapPlayers(i, j){
   renderAll();
 }
 
-// ===== SPIELER TAUSCHEN =====
-function swapPlayers(i, j){
-  // Namen tauschen
-  [state.names[i], state.names[j]] = [state.names[j], state.names[i]];
-  // Laufende Totals tauschen
-  [state.totals[i], state.totals[j]] = [state.totals[j], state.totals[i]];
-  // Alle Runden aktualisieren
-  state.rounds.forEach(r => {
-    r.players = r.players.map(p => p===i ? j : p===j ? i : p);
-    if(r.totals && r.totals.length > Math.max(i,j)){
-      [r.totals[i], r.totals[j]] = [r.totals[j], r.totals[i]];
-    }
-    if(r.aussetzer === i)      r.aussetzer = j;
-    else if(r.aussetzer === j) r.aussetzer = i;
-  });
-  save();
-  renderAll();
-}
+
 
 function openResetDialog(hard){
   const modal = document.getElementById('resetModal');
