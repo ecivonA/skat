@@ -929,30 +929,32 @@ function renderTable(){
   });
 
   tfoot.innerHTML='';
-  const tr=document.createElement('tr');
-  if(tableView!=='std') tr.classList.add('dimmed');
-  let cells='<td>Σ</td>';
-  for(let i=0;i<n;i++){const v=state.totals[i]||0,cls=v>0?'pos':v<0?'neg':'zero';cells+=`<td><span class="score-val ${cls}">${v}</span></td>`;}
-  cells+='<td></td><td></td>'; tr.innerHTML=cells; tfoot.appendChild(tr);
 
-  const sfTotals=computeSF();
-  const trSF=document.createElement('tr');
-  trSF.className='sf-row'+(tableView!=='sf'?' dimmed':'');
-  let sfCells=`<td>${t('sf')}</td>`;
-  for(let i=0;i<n;i++){
-    const base=state.totals[i]||0, delta=sfTotals[i]||0, v=base+delta;
-    const cls=v>0?'pos':v<0?'neg':'zero';
-    const dsign=delta>=0?'':'-';
-    sfCells+=`<td><span class="score-val ${cls}" style="font-size:12px">${v}</span><br><span style="font-size:8px;color:var(--muted)">${dsign}${Math.abs(delta)}</span></td>`;
+  if(tableView==='std'){
+    const tr=document.createElement('tr');
+    let cells='<td>Σ</td>';
+    for(let i=0;i<n;i++){const v=state.totals[i]||0,cls=v>0?'pos':v<0?'neg':'zero';cells+=`<td><span class="score-val ${cls}">${v}</span></td>`;}
+    cells+='<td></td><td></td>'; tr.innerHTML=cells; tfoot.appendChild(tr);
+
+  } else if(tableView==='sf'){
+    const sfTotals=computeSF();
+    const tr=document.createElement('tr'); tr.className='sf-row';
+    let cells=`<td>${t('sf')}</td>`;
+    for(let i=0;i<n;i++){
+      const base=state.totals[i]||0, delta=sfTotals[i]||0, v=base+delta;
+      const cls=v>0?'pos':v<0?'neg':'zero';
+      const dsign=delta>=0?'':'-';
+      cells+=`<td><span class="score-val ${cls}">${v}</span><br><span style="font-size:8px;color:var(--muted)">${dsign}${Math.abs(delta)}</span></td>`;
+    }
+    cells+='<td></td><td></td>'; tr.innerHTML=cells; tfoot.appendChild(tr);
+
+  } else if(tableView==='bl'){
+    const blTotals=computeBL();
+    const tr=document.createElement('tr'); tr.className='bl-row';
+    let cells='<td>BL</td>';
+    for(let i=0;i<n;i++){const v=blTotals[i]||0; cells+=`<td><span class="score-val" style="color:var(--text)">${Math.abs(v)}</span></td>`;}
+    cells+='<td></td><td></td>'; tr.innerHTML=cells; tfoot.appendChild(tr);
   }
-  sfCells+='<td></td><td></td>'; trSF.innerHTML=sfCells; tfoot.appendChild(trSF);
-
-  const blTotals=computeBL();
-  const trBL=document.createElement('tr');
-  trBL.className='bl-row'+(tableView!=='bl'?' dimmed':'');
-  let blCells='<td>BL</td>';
-  for(let i=0;i<n;i++){const v=blTotals[i]||0; blCells+=`<td><span class="score-val" style="font-size:12px;color:var(--text)">${Math.abs(v)}</span></td>`;}
-  blCells+='<td></td><td></td>'; trBL.innerHTML=blCells; tfoot.appendChild(trBL);
 
   if(moneySettings.rate>0){
     const trM=document.createElement('tr'); trM.className='money-row';
