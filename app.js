@@ -305,53 +305,20 @@ function confirmReset(){
 }
 
 // ===== SPIELER TAUSCHEN =====
-function openSwapModal(){
-  const n = state.has4 ? 4 : 3;
-  const container = document.getElementById('swapPairs');
-  container.innerHTML = '';
-  const desc = document.getElementById('swapModalText');
-  desc.textContent = 'Zwei Spieler auswählen – alle Punkte und Rundeneinträge werden mitgetauscht.';
-  for(let i=0; i<n; i++){
-    for(let j=i+1; j<n; j++){
-      const a = state.names[i] || ('Spieler '+(i+1));
-      const b = state.names[j] || ('Spieler '+(j+1));
-      const btn = document.createElement('button');
-      btn.className = 'swap-pair-btn';
-      btn.innerHTML = `<span>${a}</span><span class="swap-arrow">⇄</span><span>${b}</span>`;
-      btn.onclick = () => { swapPlayers(i, j); closeSwapModal(); };
-      container.appendChild(btn);
-    }
-  }
-  document.getElementById('swapModal').classList.add('show');
-}
-
-function closeSwapModal(){
-  document.getElementById('swapModal').classList.remove('show');
-}
-
 function swapPlayers(i, j){
-  const n = state.has4 ? 4 : 3;
-  // Namen tauschen
   [state.names[i], state.names[j]] = [state.names[j], state.names[i]];
-  // Laufende Totals tauschen
   [state.totals[i], state.totals[j]] = [state.totals[j], state.totals[i]];
-  // Alle Runden aktualisieren
   state.rounds.forEach(r => {
-    // players-Array: Indizes tauschen
     r.players = r.players.map(p => p===i ? j : p===j ? i : p);
-    // Runden-Totals tauschen
     if(r.totals && r.totals.length > Math.max(i,j)){
       [r.totals[i], r.totals[j]] = [r.totals[j], r.totals[i]];
     }
-    // Aussetzer tauschen
     if(r.aussetzer === i)      r.aussetzer = j;
     else if(r.aussetzer === j) r.aussetzer = i;
   });
   save();
   renderAll();
 }
-
-
 
 function openResetDialog(hard){
   const modal = document.getElementById('resetModal');
