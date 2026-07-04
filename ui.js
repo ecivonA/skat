@@ -139,7 +139,7 @@ function buildJackRow(){
     <div class="jack-stepper">
       <button class="jack-btn" id="jackDirBtn" onclick="toggleJackDir()"></button>
       <button class="jack-btn" onclick="stepJack(-1)">−</button>
-      <span id="jackNum" style="font-size:17px;font-weight:700;color:var(--text);min-width:16px;text-align:center"></span>
+      <span id="jackNum" style="font-weight:700;color:var(--text);min-width:16px;text-align:center"></span>
       <button class="jack-btn" onclick="stepJack(1)">+</button>
       <div class="jack-card" id="jackCard"></div>
     </div>`;
@@ -282,7 +282,7 @@ function renderGeschobenPips(){
   if(calc.geschoben === 0){ pipEl.innerHTML = ''; return; }
   let html = '';
   for(let i = 0; i < calc.geschoben; i++){
-    html += '<span class="jack-pip" style="font-size:14px">✋</span>';
+    html += '<span class="jack-pip">✋</span>';
   }
   pipEl.innerHTML = html;
 }
