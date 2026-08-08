@@ -215,6 +215,7 @@
   tfoot tr.dimmed td:first-child { color: var(--muted) !important }
   tfoot tr.dimmed .score-val { color: var(--muted) !important }
   tbody tr{border-bottom:1px solid rgba(42,42,74,.6);animation:rowIn .3s ease;-webkit-tap-highlight-color:transparent}
+  tbody::after{content:'';display:block;height:8px}
   tbody tr.editable{cursor:pointer;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
   tbody tr.editable:active{background:rgba(232,176,75,.1)}
   tbody tr.editing{background:rgba(232,176,75,.08);outline:2px solid var(--accent)}
