@@ -6,8 +6,8 @@
 //   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 
 // ---- Konfiguration: hier eure Projekt-Werte eintragen ----
-const SUPABASE_URL      = 'https://eidqeltpncugxljzirub.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_3jpPQnJolSrd-Ppqc8_d5Q_64SrR6sR';
+const SUPABASE_URL      = 'https://DEIN-PROJEKT-REF.supabase.co';
+const SUPABASE_ANON_KEY = 'DEIN-ANON-PUBLIC-KEY';
 // Der anon-Key darf öffentlich im Code stehen (siehe Absicherung über RLS-Policies,
 // supabase-setup.sql). NIEMALS den service_role-Key hier eintragen!
 
@@ -149,7 +149,30 @@ function teardownTableSession(){
 
 function handleTableClosedRemotely(){
   teardownTableSession();
-  alert(t('tableClosedByHost') || 'Der Tisch wurde vom Anschreiber beendet.');
+  showInfoModal('Der Tisch wurde vom Anschreiber beendet.');
+}
+
+// Leichtgewichtiges Info-Modal im bestehenden Look (nutzt vorhandene
+// .modal-overlay/.modal/.btn-confirm-Styles aus style.css) statt native alert().
+function showInfoModal(message){
+  let el=document.getElementById('syncInfoModal');
+  if(!el){
+    el=document.createElement('div');
+    el.id='syncInfoModal';
+    el.className='modal-overlay';
+    el.innerHTML=`<div class="modal">
+      <h2>ℹ️ Hinweis</h2>
+      <p id="syncInfoModalText" style="font-size:13px;color:var(--muted)"></p>
+      <div class="modal-btns">
+        <button class="btn-confirm" id="syncInfoModalOk">OK</button>
+      </div>
+    </div>`;
+    document.body.appendChild(el);
+    el.addEventListener('click', e=>{ if(e.target===el) el.classList.remove('show'); });
+    el.querySelector('#syncInfoModalOk').addEventListener('click', ()=>el.classList.remove('show'));
+  }
+  el.querySelector('#syncInfoModalText').textContent=message;
+  el.classList.add('show');
 }
 
 // ===== Viewer-Modus: Eingabe-UI sperren =====
@@ -186,7 +209,7 @@ function showViewerCloseBar(){
     bar=document.createElement('div');
     bar.id='viewerCloseBar';
     bar.style.cssText='padding:10px;text-align:center';
-    bar.innerHTML=`<button class="btn-cancel" onclick="closeViewerReadOnly()">${t('schliessen')||'Schließen'}</button>`;
+    bar.innerHTML=`<button class="btn-cancel" onclick="closeViewerReadOnly()">Schließen</button>`;
     document.querySelector('.panel-content').appendChild(bar);
   }
   bar.style.display='';
@@ -280,7 +303,7 @@ function renderQrCode(holderId, text){
   holder.innerHTML=qr.createSvgTag({cellSize:5, margin:2});
 }
 
-function showSyncError(){ alert('Tisch konnte nicht erstellt werden. Bitte später erneut versuchen.'); }
+function showSyncError(){ showInfoModal('Tisch konnte nicht erstellt werden. Bitte später erneut versuchen.'); }
 function showJoinError(){
   const el=document.getElementById('joinErrorMsg');
   if(el) el.style.display='';
