@@ -15,6 +15,7 @@ let sb = null;
 let currentTable = null;          // { code, isMaster } | null
 let realtimeChannel = null;
 let viewerReadOnlyActive = false;
+let viewerPeekIdx = null;         // Index der Runde, die der Zuschauer gerade rein lesend betrachtet, oder null
 
 // ===== Persistenz der Tisch-Session =====
 // Getrennt vom eigentlichen Spielstand (skat_v4): merkt sich nur "welcher Tisch,
@@ -117,6 +118,11 @@ function subscribeTable(code){
         if(currentTable && !currentTable.isMaster){
           state = row.state;
           saveLocalOnly();
+          if(viewerPeekIdx !== null){
+            // Anschreiber hat währenddessen weitergemacht – Lese-Ansicht schließen,
+            // statt veraltete/ungewollt wieder aktivierte Bedienelemente stehen zu lassen.
+            closeViewerReadOnly();
+          }
           renderAll(); updateCalcUI(); updateQueueUI();
         }
       })
@@ -251,6 +257,7 @@ if(typeof toggleQueueBlock === 'function'){
 // Zeigt Stage 1/2 rein lesend, ohne Schreibrechte.
 function viewRoundReadOnly(idx){
   if(!viewerReadOnlyActive) return;
+  viewerPeekIdx = idx;
   const panel=document.getElementById('inputPanel');
   if(panel) panel.style.display='';
   startEditRound(idx);   // Stage-1/2-Wiederherstellung wiederverwenden …
@@ -276,6 +283,7 @@ function showViewerCloseBar(){
   bar.style.display='';
 }
 function closeViewerReadOnly(){
+  viewerPeekIdx = null;
   const panel=document.getElementById('inputPanel');
   if(panel) panel.style.display='none';
   const bar=document.getElementById('viewerCloseBar');
