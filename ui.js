@@ -762,6 +762,12 @@ function vormerken(){
   document.getElementById('inputPanel').classList.add('open');
   renderAll();
   setType(suitType);
+  // setType() setzt spitzeA generell zurück (schützt vor dirty state bei echtem
+  // Typwechsel) – hier aber nur Wiederherstellung nach "Vormerken", daher die
+  // gerade gespeicherte Ansage direkt danach wieder anwenden.
+  calc.spitzeA = sc2.spitzeA||false;
+  const dSpAel=document.getElementById('dSpitzeA');
+  if(dSpAel) dSpAel.classList.toggle('active', calc.spitzeA);
   refreshJackRow(); buildNullBtns();
   showStage2();
   updateCalcUI(); updatePlayerBtns(); updatePanelHeight();
