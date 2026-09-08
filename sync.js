@@ -253,6 +253,26 @@ if(typeof toggleQueueBlock === 'function'){
   };
 }
 
+// ===== Echte Sperre auf Funktionsebene statt nur über disabled=true =====
+// disabled=true auf Buttons ist reine Anzeige und kann durch jeden nachfolgenden
+// Re-Render (updateCalcUI, renderAll, ...) versehentlich wieder aufgehoben werden
+// (genau das war der vorherige Bug). Die eigentliche Sperre gehört daher in die
+// Funktionen selbst, die den State/Calc mutieren – Buttons zeigen nur noch den
+// Zustand an, entscheiden aber nicht mehr darüber.
+function lockForViewer(fnName){
+  if(typeof window[fnName] !== 'function') return;
+  const original = window[fnName];
+  window[fnName] = function(...args){
+    if(viewerReadOnlyActive) return;
+    return original.apply(this, args);
+  };
+}
+[
+  'togglePlayer','setType','toggleOpt','toggleDbl',
+  'stepFactor','stepGeschoben','toggleSign','toggleRamschDurch',
+  'vormerken','backToStage1','addRound'
+].forEach(lockForViewer);
+
 // Wird von ui.js beim langen Druck auf eine Zeile aufgerufen (siehe Integrationshinweis).
 // Zeigt Stage 1/2 rein lesend, ohne Schreibrechte.
 function viewRoundReadOnly(idx){
