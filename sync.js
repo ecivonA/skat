@@ -16,6 +16,24 @@ let currentTable = null;          // { code, isMaster } | null
 let realtimeChannel = null;
 let viewerReadOnlyActive = false;
 
+// ===== Persistenz der Tisch-Session =====
+// Getrennt vom eigentlichen Spielstand (skat_v4): merkt sich nur "welcher Tisch,
+// welche Rolle", damit die App nach Reload/Neustart weiß, dass sie Host oder
+// Zuschauer war, statt das einfach zu vergessen.
+const TABLE_SESSION_KEY='skat_table_session';
+function saveTableSession(){
+  try{
+    if(currentTable) localStorage.setItem(TABLE_SESSION_KEY, JSON.stringify(currentTable));
+    else localStorage.removeItem(TABLE_SESSION_KEY);
+  }catch(e){}
+}
+function loadTableSession(){
+  try{
+    const d=localStorage.getItem(TABLE_SESSION_KEY);
+    return d?JSON.parse(d):null;
+  }catch(e){ return null; }
+}
+
 function sbReady(){ return typeof supabase !== 'undefined'; }
 
 async function sbInit(){
@@ -57,6 +75,7 @@ async function createTableSession(){
   if(!code){ showSyncError(); return; }
 
   currentTable={ code, isMaster:true };
+  saveTableSession();
   subscribeTable(code);
   renderTableModalContent();
   updateHeaderSyncBadge();
@@ -73,6 +92,7 @@ async function joinTableSession(rawCode){
   if(error || !data || data.status!=='open'){ showJoinError(); return; }
 
   currentTable={ code, isMaster:false };
+  saveTableSession();
   state = data.state;
   saveLocalOnly();
   renderAll(); updateCalcUI(); updateQueueUI(); applyTranslations();
@@ -142,6 +162,7 @@ function teardownTableSession(){
   if(realtimeChannel && sb){ sb.removeChannel(realtimeChannel); realtimeChannel=null; }
   const wasViewer = currentTable && !currentTable.isMaster;
   currentTable=null;
+  saveTableSession();
   if(wasViewer) applyViewerMode(false);
   updateHeaderSyncBadge();
   renderTableModalContent();
@@ -187,6 +208,20 @@ function applyViewerMode(on){
   if(undoBtn) undoBtn.style.display = on ? 'none' : '';
   const resetBtn=document.getElementById('resetBtn');
   if(resetBtn) resetBtn.style.display = on ? 'none' : '';
+  // Spielernamen bleiben Sache des Anschreibers – Zuschauer dürfen nicht umbenennen
+  ['th0','th1','th2','th3'].forEach(id=>{
+    const th=document.getElementById(id);
+    if(th) th.style.cursor = on ? 'default' : 'pointer';
+  });
+}
+
+// editName() (ui.js) im Viewer-Modus wirkungslos machen – gleicher Wrapper-Trick wie bei save().
+if(typeof editName === 'function'){
+  const _localEditName = editName;
+  editName = function(i){
+    if(viewerReadOnlyActive) return;
+    _localEditName(i);
+  };
 }
 
 // Wird von ui.js beim langen Druck auf eine Zeile aufgerufen (siehe Integrationshinweis).
@@ -312,12 +347,58 @@ function showJoinError(){
   if(el) el.style.display='';
 }
 
-// ===== Auto-Join per URL (?table=CODE aus QR-Scan/Link) =====
-(function autoJoinFromUrl(){
-  const params=new URLSearchParams(window.location.search);
-  const code=params.get('table');
-  if(code){
-    // Etwas warten, bis app.js init durchgelaufen ist
-    window.addEventListener('load', ()=>{ setTimeout(()=>joinTableSession(code), 300); });
+// ===== Tisch-Session nach Reload/Neustart wiederherstellen =====
+async function restoreTableSessionIfAny(){
+  const saved=loadTableSession();
+  if(!saved) return;
+  const client=await sbInit();
+  if(!client) return; // z.B. offline – Session bleibt gespeichert, nächster Start versucht es erneut
+
+  let data=null, error=null;
+  try{
+    const res=await client.from('tables').select('*').eq('code', saved.code).maybeSingle();
+    data=res.data; error=res.error;
+  }catch(e){ error=e; }
+
+  if(error){
+    // Netzwerk-/Serverproblem: Session NICHT verwerfen, App läuft lokal normal weiter,
+    // nächster Start versucht erneut anzudocken.
+    return;
   }
+  if(!data || data.status!=='open'){
+    // Tisch existiert nicht mehr oder wurde geschlossen, während die App zu war
+    const wasClosed = data && data.status==='closed';
+    currentTable=null;
+    saveTableSession();
+    if(wasClosed) showInfoModal(t('tischGeschlossenHinweis'));
+    return;
+  }
+
+  currentTable={ code:saved.code, isMaster:saved.isMaster };
+  if(!currentTable.isMaster){
+    // Zuschauer: Server-Stand kann inzwischen weiter sein als der lokal gecachte
+    state = data.state;
+    saveLocalOnly();
+    renderAll(); updateCalcUI(); updateQueueUI(); applyTranslations();
+    applyViewerMode(true);
+  }
+  // Master: state ist bereits die lokale Quelle der Wahrheit, nichts überschreiben –
+  // nur wieder andocken, damit z.B. ein Fernschließen künftig ankäme.
+  subscribeTable(currentTable.code);
+  updateHeaderSyncBadge();
+}
+
+// ===== Beim Start: entweder per ?table=CODE beitreten, oder alte Session wiederherstellen =====
+(function initSyncOnLoad(){
+  window.addEventListener('load', ()=>{
+    setTimeout(async ()=>{
+      const params=new URLSearchParams(window.location.search);
+      const code=params.get('table');
+      if(code){
+        await joinTableSession(code);   // expliziter QR-/Link-Beitritt hat Vorrang
+      } else {
+        await restoreTableSessionIfAny();
+      }
+    }, 300);
+  });
 })();
