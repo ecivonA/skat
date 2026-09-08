@@ -149,7 +149,7 @@ function teardownTableSession(){
 
 function handleTableClosedRemotely(){
   teardownTableSession();
-  showInfoModal('Der Tisch wurde vom Anschreiber beendet.');
+  showInfoModal(t('tischGeschlossenHinweis'));
 }
 
 // Leichtgewichtiges Info-Modal im bestehenden Look (nutzt vorhandene
@@ -161,16 +161,18 @@ function showInfoModal(message){
     el.id='syncInfoModal';
     el.className='modal-overlay';
     el.innerHTML=`<div class="modal">
-      <h2>ℹ️ Hinweis</h2>
+      <h2>ℹ️ <span id="syncInfoModalTitle"></span></h2>
       <p id="syncInfoModalText" style="font-size:13px;color:var(--muted)"></p>
       <div class="modal-btns">
-        <button class="btn-confirm" id="syncInfoModalOk">OK</button>
+        <button class="btn-confirm" id="syncInfoModalOk"></button>
       </div>
     </div>`;
     document.body.appendChild(el);
     el.addEventListener('click', e=>{ if(e.target===el) el.classList.remove('show'); });
     el.querySelector('#syncInfoModalOk').addEventListener('click', ()=>el.classList.remove('show'));
   }
+  el.querySelector('#syncInfoModalTitle').textContent=t('hinweis');
+  el.querySelector('#syncInfoModalOk').textContent=t('ok');
   el.querySelector('#syncInfoModalText').textContent=message;
   el.classList.add('show');
 }
@@ -209,9 +211,10 @@ function showViewerCloseBar(){
     bar=document.createElement('div');
     bar.id='viewerCloseBar';
     bar.style.cssText='padding:10px;text-align:center';
-    bar.innerHTML=`<button class="btn-cancel" onclick="closeViewerReadOnly()">Schließen</button>`;
+    bar.innerHTML=`<button class="btn-cancel" onclick="closeViewerReadOnly()"></button>`;
     document.querySelector('.panel-content').appendChild(bar);
   }
+  bar.querySelector('button').textContent=t('ansichtSchliessen');
   bar.style.display='';
 }
 function closeViewerReadOnly(){
@@ -257,18 +260,18 @@ function renderTableModalContent(){
   if(!currentTable){
     body.innerHTML = `
       <p style="font-size:12px;color:var(--muted);margin-bottom:14px">
-        Tisch eröffnen, damit Mitspieler auf ihrem eigenen Gerät live mitlesen können.
+        ${t('tischIntro')}
       </p>
       <div class="modal-btns" style="flex-direction:column;gap:8px">
-        <button class="btn-confirm" onclick="createTableSession()">Tisch eröffnen</button>
+        <button class="btn-confirm" onclick="createTableSession()">${t('tischEroeffnen')}</button>
       </div>
       <div style="margin-top:16px;display:flex;gap:8px;align-items:center">
-        <input class="settings-input" id="joinCodeInput" maxlength="5" placeholder="CODE"
+        <input class="settings-input" id="joinCodeInput" maxlength="5" placeholder="${t('tischCodePlatzhalter')}"
                style="text-transform:uppercase;flex:1" oninput="this.value=this.value.toUpperCase()">
-        <button class="btn-confirm" onclick="joinTableSession(document.getElementById('joinCodeInput').value)">Beitreten</button>
+        <button class="btn-confirm" onclick="joinTableSession(document.getElementById('joinCodeInput').value)">${t('tischBeitreten')}</button>
       </div>
       <div id="joinErrorMsg" style="display:none;color:var(--red,#e55);font-size:11px;margin-top:6px">
-        Tisch nicht gefunden oder bereits geschlossen.
+        ${t('tischNichtGefunden')}
       </div>
     `;
     return;
@@ -278,7 +281,7 @@ function renderTableModalContent(){
   body.innerHTML = `
     <div style="text-align:center">
       <div style="font-size:11px;color:var(--muted);margin-bottom:4px">
-        ${currentTable.isMaster ? 'Du bist Anschreiber' : 'Du liest mit (nur Ansicht)'}
+        ${currentTable.isMaster ? t('tischDuBistAnschreiber') : t('tischDuLiestMit')}
       </div>
       <div style="font-family:'Source Code Pro',monospace;font-size:28px;letter-spacing:4px;margin-bottom:12px">
         ${currentTable.code}
@@ -286,8 +289,8 @@ function renderTableModalContent(){
       <div id="qrHolder" style="display:flex;justify-content:center;margin-bottom:14px"></div>
       <div class="modal-btns" style="flex-direction:column;gap:8px">
         ${currentTable.isMaster
-          ? `<button class="btn-cancel" onclick="closeTableSession()">Tisch schließen</button>`
-          : `<button class="btn-cancel" onclick="leaveTableSession()">Tisch verlassen</button>`}
+          ? `<button class="btn-cancel" onclick="closeTableSession()">${t('tischSchliessen')}</button>`
+          : `<button class="btn-cancel" onclick="leaveTableSession()">${t('tischVerlassen')}</button>`}
       </div>
     </div>
   `;
@@ -303,7 +306,7 @@ function renderQrCode(holderId, text){
   holder.innerHTML=qr.createSvgTag({cellSize:5, margin:2});
 }
 
-function showSyncError(){ showInfoModal('Tisch konnte nicht erstellt werden. Bitte später erneut versuchen.'); }
+function showSyncError(){ showInfoModal(t('tischFehlerErstellen')); }
 function showJoinError(){
   const el=document.getElementById('joinErrorMsg');
   if(el) el.style.display='';
