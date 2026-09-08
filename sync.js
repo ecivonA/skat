@@ -213,6 +213,11 @@ function applyViewerMode(on){
     const th=document.getElementById(id);
     if(th) th.style.cursor = on ? 'default' : 'pointer';
   });
+  // Bock/Pflicht-Ramsch-Buttons (Header + Tab-Leiste) optisch sperren
+  ['queueBockBtn','queueRamschBtn','queueBockBtnTab','queueRamschBtnTab'].forEach(id=>{
+    const b=document.getElementById(id);
+    if(b){ b.style.pointerEvents = on ? 'none' : ''; b.style.opacity = on ? '0.4' : ''; }
+  });
 }
 
 // editName() (ui.js) im Viewer-Modus wirkungslos machen – gleicher Wrapper-Trick wie bei save().
@@ -221,6 +226,24 @@ if(typeof editName === 'function'){
   editName = function(i){
     if(viewerReadOnlyActive) return;
     _localEditName(i);
+  };
+}
+
+// Spalten-Tausch per langem Druck (ui.js) im Viewer-Modus unterbinden.
+if(typeof _beginColDrag === 'function'){
+  const _localBeginColDrag = _beginColDrag;
+  _beginColDrag = function(idx, x, y){
+    if(viewerReadOnlyActive) return;
+    _localBeginColDrag(idx, x, y);
+  };
+}
+
+// Bock-/Pflicht-Ramsch-Queue-Buttons (app.js) im Viewer-Modus unterbinden.
+if(typeof toggleQueueBlock === 'function'){
+  const _localToggleQueueBlock = toggleQueueBlock;
+  toggleQueueBlock = function(tp){
+    if(viewerReadOnlyActive) return;
+    _localToggleQueueBlock(tp);
   };
 }
 
