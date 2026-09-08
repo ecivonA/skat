@@ -280,8 +280,26 @@ function viewRoundReadOnly(idx){
   viewerPeekIdx = idx;
   const panel=document.getElementById('inputPanel');
   if(panel) panel.style.display='';
-  startEditRound(idx);   // Stage-1/2-Wiederherstellung wiederverwenden …
-  editRoundIdx = -1;     // … aber sofort Schreibmarkierung entfernen
+
+  // startEditRound() weigert sich normalerweise komplett, wenn state gerade eine
+  // offene (vorgemerkte) Runde hat – richtig für den Anschreiber (kann nicht
+  // rückwirkend etwas Altes bearbeiten, während eine Ansage läuft), aber falsch für
+  // die reine Lese-Ansicht: die betrachtete Runde idx ist ja unabhängig davon. Die
+  // Sperre für diesen einen, synchronen Aufruf kurz überbrücken.
+  const _realHasOpenRound = hasOpenRound;
+  hasOpenRound = function(){ return false; };
+
+  // startEditRound() ruft intern u.a. setType() auf – das ist jetzt (richtigerweise)
+  // für Zuschauer gesperrt. Diese interne Wiederherstellung ist aber kein Nutzer-
+  // Eingriff, sondern nur Anzeige – die Zuschauer-Sperre für diesen einen Aufruf
+  // ebenfalls kurz aussetzen. Da JS hier synchron durchläuft, kann währenddessen
+  // keine echte Nutzereingabe dazwischenfunken.
+  viewerReadOnlyActive = false;
+  startEditRound(idx);
+  viewerReadOnlyActive = true;
+
+  hasOpenRound = _realHasOpenRound;
+  editRoundIdx = -1;     // Schreibmarkierung sofort wieder entfernen
   document.querySelectorAll('#stage1 button, #stage1 input, #stage2 button, #stage2 input')
     .forEach(el=>{ el.disabled=true; });
   const addBtn=document.getElementById('addBtn');
