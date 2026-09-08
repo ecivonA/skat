@@ -14,7 +14,10 @@
 <body>
 <div class="app">
   <header>
-    <div class="logo"><span>♠</span> Skat</div>
+	<div class="logo" onclick="openTableModal()" style="cursor:pointer">
+	  <span>♠</span> Skat
+	  <span id="syncBadge" class="sync-badge" style="display:none"></span>
+	</div>
     <div class="header-actions">
       <div class="lang-btn" id="langBtn" onclick="toggleLangDropdown(event)">
         <span id="langFlag">🇩🇪</span><span id="langCode">DE</span>
@@ -311,8 +314,19 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="tableModal" onclick="closeTableModalOutside(event)">
+  <div class="modal">
+    <h2>🔗 Tisch</h2>
+    <div id="tableModalBody"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeTableModal()">Schließen</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"><span id="toastText"></span> <button id="toastUndo"></button></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <script src="lang.js"></script>
 <script src="calc.js"></script>
 <script src="ui.js"></script>

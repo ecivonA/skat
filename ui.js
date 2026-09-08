@@ -462,13 +462,9 @@ function updateHint(){
   }
   const aussetzer=state.has4 ? getAussetzer() : -1;
   const ausName=aussetzer>=0 ? (state.names[aussetzer]||('Spieler '+(aussetzer+1))) : '';
-  const geber=!state.has4 ? getGeber() : -1;
-  const geberName=geber>=0 ? (state.names[geber]||('Spieler '+(geber+1))) : '';
   if(selectedPlayers.length===0){
     if(state.has4 && aussetzer>=0){
       hint.innerHTML=`<span style="color:var(--muted)">${ausName} ↪ ${t('aussetzt')}</span> · ${t('spielerAuswaehlen')}`;
-    } else if(!state.has4 && geber>=0){
-      hint.innerHTML=`<span style="color:var(--muted)">${geberName} 🂠 ${t('gibt')}</span> · ${t('spielerAuswaehlen')}`;
     } else {
       hint.innerHTML=t('spielerAuswaehlen');
     }
@@ -476,7 +472,6 @@ function updateHint(){
     const names=selectedPlayers.map(i=>state.names[i]||('Spieler '+(i+1))).join(' + ');
     let h=`<span>${names}</span> ${t('bekommtPunkte')}`;
     if(state.has4 && aussetzer>=0) h+=` · <span style="color:var(--muted)">${ausName} ↪ ${t('aussetzt')}</span>`;
-    else if(!state.has4 && geber>=0) h+=` · <span style="color:var(--muted)">${geberName} 🂠 ${t('gibt')}</span>`;
     hint.innerHTML=h;
   }
 }
@@ -811,7 +806,6 @@ function setView(v){
 function updateHeaders(){
   const n=state.has4?4:3;
   const aussetzer=getAussetzer();
-  const geber=!state.has4?getGeber():-1;
   for(let i=0;i<4;i++){
     const th=document.getElementById('th'+i);
     const show=i<n;
@@ -820,8 +814,6 @@ function updateHeaders(){
       const name=state.names[i]||('Spieler '+(i+1));
       if(state.has4&&i===aussetzer){
         th.innerHTML=name+'<span class="th-aussetzer-badge">↪ '+t('aussetzt')+'</span>';
-      } else if(!state.has4&&i===geber){
-        th.innerHTML=name+'<span class="th-aussetzer-badge">🂠 '+t('gibt')+'</span>';
       } else {
         th.textContent=name;
       }
@@ -891,7 +883,14 @@ function renderTable(){
     } else if(!r.open&&r.value!==null&&r.value!==undefined){
       tr.classList.add('editable');
       if(editRoundIdx===idx) tr.classList.add('editing');
-      addLongPress(tr,()=>startEditRound(idx));
+      // addLongPress(tr,()=>startEditRound(idx));
+		addLongPress(tr,()=>{
+		  if(typeof viewerReadOnlyActive!=='undefined' && viewerReadOnlyActive){
+			viewRoundReadOnly(idx);
+		  } else {
+			startEditRound(idx);
+		  }
+		});
     }
     let cells=`<td>${idx+1}</td>`;
     for(let i=0;i<n;i++){
@@ -1106,7 +1105,7 @@ function cancelEditRound(){
   editRoundIdx=-1;
   document.getElementById('addBtn').textContent=t('eintragen');
   document.getElementById('addBtn').classList.remove('edit-mode');
-  applyQueueTypeRestriction();
+  document.querySelectorAll('.type-btn').forEach(b=>{ b.disabled=false; b.style.opacity=''; });
   renderTable();
 }
 
@@ -1133,7 +1132,7 @@ function saveEditRound(){
   };
   recomputeAllTotals();
   editRoundIdx=-1;
-  applyQueueTypeRestriction();
+  document.querySelectorAll('.type-btn').forEach(b=>{ b.disabled=false; b.style.opacity=''; });
   save();
   resetPanel();
   document.getElementById('addBtn').textContent=t('eintragen');
