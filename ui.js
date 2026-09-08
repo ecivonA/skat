@@ -188,11 +188,6 @@ function setType(tp){
   if(isSuit){ calc.farbeIdx=SUIT_IDX[tp]; calc.type='farbe'; }
   else { calc.type=tp; }
 
-  // SpitzeA beim Typwechsel immer zurücksetzen – verhindert dirty State
-  calc.spitzeA=false;
-  const dSpAel=document.getElementById('dSpitzeA');
-  if(dSpAel) dSpAel.classList.remove('active');
-
   if(tp !== 'ramsch'){
     document.getElementById('ramschDurch').classList.remove('active');
     document.getElementById('calcRamschInputRow').style.display='';
@@ -208,15 +203,16 @@ function setType(tp){
   }
   if(tp==='leer') selectedPlayers=[];
   if(tp==='rgh'){
-    calc.schneiderA=false; calc.schwarzA=false; calc.ouvert=false; calc.hand=true;
+    calc.schneiderA=false; calc.schwarzA=false; calc.ouvert=false; calc.spitzeA=false; calc.hand=true;
     document.getElementById('dSchneiderA').classList.remove('active');
     document.getElementById('dSchwarzA').classList.remove('active');
     document.getElementById('dOuvert').classList.remove('active');
+    document.getElementById('dSpitzeA').classList.remove('active');
     document.getElementById('dHand').classList.add('active');
     syncFactor();
   } else if(tp!=='grand' && !isSuit){
-    calc.hand=false; calc.schneiderA=false; calc.schwarzA=false; calc.ouvert=false;
-    ['dHand','dSchneiderA','dSchwarzA','dOuvert'].forEach(id=>document.getElementById(id).classList.remove('active'));
+    calc.hand=false; calc.schneiderA=false; calc.schwarzA=false; calc.ouvert=false; calc.spitzeA=false;
+    ['dHand','dSchneiderA','dSchwarzA','dOuvert','dSpitzeA'].forEach(id=>document.getElementById(id).classList.remove('active'));
   }
 
   document.querySelectorAll('.type-btn').forEach(b=>b.classList.toggle('active', b.dataset.type===tp));
@@ -755,19 +751,13 @@ function vormerken(){
     nullHand:sc2.nullHand||false, nullOuvert:sc2.nullOuvert||false, nullRevol:sc2.nullRevol||false,
     jackCount:1, jackDir:'mit', hand:sc2.hand, schneider:false, schneiderA:sc2.schneiderA,
     schwarz:false, schwarzA:sc2.schwarzA, ouvert:sc2.ouvert,
-    spitze:false, spitzeA:false, kontra:false, re:false, bock:false,
+    spitze:false, spitzeA:sc2.spitzeA||false, kontra:false, re:false, bock:false,
     jungfrau:sc2.jungfrau, geschoben:sc2.geschoben, verloren:false};
   const suitType=sc2.type==='farbe' ? ['karo','herz','pik','kreuz'][sc2.farbeIdx] : sc2.type;
   panelOpen=true;
   document.getElementById('inputPanel').classList.add('open');
   renderAll();
   setType(suitType);
-  // setType() setzt spitzeA generell zurück (schützt vor dirty state bei echtem
-  // Typwechsel) – hier aber nur Wiederherstellung nach "Vormerken", daher die
-  // gerade gespeicherte Ansage direkt danach wieder anwenden.
-  calc.spitzeA = sc2.spitzeA||false;
-  const dSpAel=document.getElementById('dSpitzeA');
-  if(dSpAel) dSpAel.classList.toggle('active', calc.spitzeA);
   refreshJackRow(); buildNullBtns();
   showStage2();
   updateCalcUI(); updatePlayerBtns(); updatePanelHeight();
@@ -897,14 +887,13 @@ function renderTable(){
     } else if(!r.open&&r.value!==null&&r.value!==undefined){
       tr.classList.add('editable');
       if(editRoundIdx===idx) tr.classList.add('editing');
-      //addLongPress(tr,()=>startEditRound(idx));
-	  addLongPress(tr,()=>{
-		  if(typeof viewerReadOnlyActive!=='undefined' && viewerReadOnlyActive){
-			viewRoundReadOnly(idx);
-		  } else {
-			startEditRound(idx);
-		  }
-		});
+      addLongPress(tr,()=>{
+        if(typeof viewerReadOnlyActive!=='undefined' && viewerReadOnlyActive){
+          viewRoundReadOnly(idx);
+        } else {
+          startEditRound(idx);
+        }
+      });
     }
     let cells=`<td>${idx+1}</td>`;
     for(let i=0;i<n;i++){
