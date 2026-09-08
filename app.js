@@ -31,6 +31,19 @@ function getAussetzer(){
   return idx;
 }
 
+// Geber (Kartengeber): rotiert wie der Aussetzer, beginnt bei Spieler 1 (Index 0).
+// Im 4-Spieler-Modus ist der Geber identisch mit dem Aussetzer (bereits über
+// getAussetzer() sichtbar). Im 3-Spieler-Modus gibt es keinen Aussetzer, aber
+// dennoch einen rotierenden Geber – wird separat berechnet.
+function getGeber(){
+  if(state.has4) return getAussetzer();
+  let idx=0;
+  for(const r of state.rounds){
+    if(!r.isRamschGH && r.typeKey!=='rgh') idx=(idx+1)%3;
+  }
+  return idx;
+}
+
 function countRegularRounds(){
   return state.rounds.filter(r=>!r.isRamschGH).length;
 }
