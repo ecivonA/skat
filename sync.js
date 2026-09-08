@@ -6,8 +6,8 @@
 //   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 
 // ---- Konfiguration: hier eure Projekt-Werte eintragen ----
-const SUPABASE_URL      = 'https://DEIN-PROJEKT-REF.supabase.co';
-const SUPABASE_ANON_KEY = 'DEIN-ANON-PUBLIC-KEY';
+const SUPABASE_URL      = 'https://eidqeltpncugxljzirub.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_3jpPQnJolSrd-Ppqc8_d5Q_64SrR6sR';
 // Der anon-Key darf öffentlich im Code stehen (siehe Absicherung über RLS-Policies,
 // supabase-setup.sql). NIEMALS den service_role-Key hier eintragen!
 
