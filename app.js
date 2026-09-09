@@ -117,26 +117,10 @@ function updateQueueUI(){
   const q=state.queue;
   const bockCount  =q.filter(x=>x.type==='bock').length;
   const ramschCount=q.filter(x=>x.type==='ramsch').length;
-  // Header-Buttons weg sobald erste Runde existiert (offen oder abgeschlossen)
-  const hasRounds = state.rounds.length > 0;
 
-  // Header-Buttons (sichtbar solange noch kein abgeschlossenes Spiel)
-  const bockBtnH  =document.getElementById('queueBockBtn');
-  const ramschBtnH=document.getElementById('queueRamschBtn');
-  const bockCntH  =document.getElementById('queueBockCount');
-  const ramschCntH=document.getElementById('queueRamschCount');
-  if(bockBtnH){
-    bockBtnH.style.display   = hasRounds ? 'none' : '';
-    bockBtnH.classList.toggle('bock-active', bockCount>0);
-    if(bockCntH) bockCntH.textContent=bockCount;
-  }
-  if(ramschBtnH){
-    ramschBtnH.style.display   = hasRounds ? 'none' : '';
-    ramschBtnH.classList.toggle('ramsch-active', ramschCount>0);
-    if(ramschCntH) ramschCntH.textContent=ramschCount;
-  }
-
-  // Tab-Buttons (sichtbar wenn Runden vorhanden, in viewTabs)
+  // Queue-Buttons leben jetzt ausschließlich in der Tab-Zeile (viewTabs) –
+  // erscheinen dort schon, sobald eine Queue aktiv ist, nicht erst nach der
+  // ersten Runde. Kein separater Header-Button mehr nötig.
   const bockBtnT  =document.getElementById('queueBockBtnTab');
   const ramschBtnT=document.getElementById('queueRamschBtnTab');
   const bockCntT  =document.getElementById('queueBockCountTab');
@@ -295,7 +279,7 @@ function hideToast(){ document.getElementById('toast').classList.remove('show');
 // ===== VERSION / ÜBER DIESE APP =====
 // Manuell synchron mit der CACHE-Konstante in sw.js halten (dort ist die
 // "echte" Versionsverwaltung fürs Caching, hier nur zur Anzeige im Modal).
-const APP_VERSION = 'v3.04';
+const APP_VERSION = 'v3.05';
 
 function openAboutModal(){
   const vEl=document.getElementById('aboutVersion');
