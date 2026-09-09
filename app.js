@@ -292,6 +292,26 @@ function showToast(){
 }
 function hideToast(){ document.getElementById('toast').classList.remove('show'); }
 
+// ===== VERSION / ÜBER DIESE APP =====
+// Manuell synchron mit der CACHE-Konstante in sw.js halten (dort ist die
+// "echte" Versionsverwaltung fürs Caching, hier nur zur Anzeige im Modal).
+const APP_VERSION = 'v3.03';
+
+function openAboutModal(){
+  const vEl=document.getElementById('aboutVersion');
+  if(vEl) vEl.textContent = APP_VERSION;
+  document.getElementById('aboutModal').classList.add('show');
+}
+function closeAboutModal(){ document.getElementById('aboutModal').classList.remove('show'); }
+
+// ===== UNDO-BESTÄTIGUNG =====
+function openUndoConfirm(){
+  if(state.rounds.length===0) return;
+  document.getElementById('undoConfirmModal').classList.add('show');
+}
+function closeUndoConfirm(){ document.getElementById('undoConfirmModal').classList.remove('show'); }
+function confirmUndo(){ closeUndoConfirm(); undoLast(); }
+
 // ===== RESET =====
 function closeReset(){ document.getElementById('resetModal').classList.remove('show'); }
 
@@ -545,7 +565,7 @@ if(document.getElementById('inputPanel')){
     const noRounds = state.rounds.length === 0;
     openResetDialog(noRounds);
   });
-  document.getElementById('undoBtn').addEventListener('click', undoLast);
+  document.getElementById('undoBtn').addEventListener('click', openUndoConfirm);
   document.getElementById('toastUndo').onclick = function(){
     if(!lastDeleted) return;
     if(lastDeleted.queueBefore!==undefined){

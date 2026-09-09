@@ -90,7 +90,14 @@ async function joinTableSession(rawCode){
   if(code.length<5){ showJoinError(); return; }
 
   const { data, error } = await client.from('tables').select('*').eq('code', code).maybeSingle();
-  if(error || !data || data.status!=='open'){ showJoinError(); return; }
+  if(error || !data || data.status!=='open'){
+    showJoinError();
+    // Auch sichtbar machen, wenn das Tisch-Modal gar nicht geöffnet ist (z.B. beim
+    // automatischen Beitritt per ?table=CODE-Link) – sonst scheitert der Beitritt
+    // unbemerkt und die App zeigt einfach weiter den letzten lokalen Stand.
+    showInfoModal(t('tischNichtGefunden'));
+    return;
+  }
 
   currentTable={ code, isMaster:false };
   saveTableSession();
@@ -341,15 +348,15 @@ function closeViewerReadOnly(){
 
 // ===== Header-Badge =====
 function updateHeaderSyncBadge(){
-  const badge=document.getElementById('syncBadge');
-  if(!badge) return;
-  if(!currentTable){ badge.style.display='none'; return; }
-  badge.style.display='';
-  badge.classList.toggle('sync-master', currentTable.isMaster);
-  badge.classList.toggle('sync-viewer', !currentTable.isMaster);
-  badge.title = currentTable.isMaster
-    ? 'Tisch '+currentTable.code+' – du bist Anschreiber'
-    : 'Tisch '+currentTable.code+' – Zuschauer-Modus';
+  const suit=document.getElementById('logoSuit');
+  if(!suit) return;
+  suit.classList.toggle('sync-master', !!(currentTable && currentTable.isMaster));
+  suit.classList.toggle('sync-viewer', !!(currentTable && !currentTable.isMaster));
+  const logo=document.querySelector('.logo');
+  if(logo) logo.title = !currentTable ? ''
+    : currentTable.isMaster
+      ? 'Tisch '+currentTable.code+' – du bist Anschreiber'
+      : 'Tisch '+currentTable.code+' – Zuschauer-Modus';
 }
 
 // ===== Modal: Öffnen / Rendern / Schließen =====

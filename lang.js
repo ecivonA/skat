@@ -52,6 +52,8 @@ const T = {
     tischGeschlossenHinweis:'Der Tisch wurde vom Anschreiber beendet.',
     tischFehlerErstellen:'Tisch konnte nicht erstellt werden. Bitte später erneut versuchen.',
     hinweis:'Hinweis', ok:'OK', ansichtSchliessen:'Schließen',
+    undoConfirmTitle:'Letzte Runde rückgängig machen?',
+    aboutText:'Skat Anschreibung ist eine schlanke, werbefreie App fürs digitale Punkteschreiben am Kartentisch — installierbar auf dem Homescreen, funktioniert auch ganz ohne Internetverbindung. Sie rechnet klassisch, nach Seeger-Fabian und nach Bierlachs gleichzeitig mit, behält Bock und Pflicht-Ramsch von selbst im Blick und lässt sich per Tischcode mit den Mitspielern teilen, damit nicht mehr alle auf ein einziges Handy starren müssen. Gewachsen aus dem Wunsch, Skatabende ein bisschen einfacher zu machen — und immer noch in Entwicklung.',
   },
   en: {
     farbe:'Suit', grand:'Grand', null:'Null', durch:'March', ramsch:'Ramsch',
@@ -101,6 +103,8 @@ const T = {
     tischGeschlossenHinweis:'The table was closed by the scorekeeper.',
     tischFehlerErstellen:'Could not create the table. Please try again later.',
     hinweis:'Note', ok:'OK', ansichtSchliessen:'Close',
+    undoConfirmTitle:'Undo the last round?',
+    aboutText:'Skat Anschreibung is a lean, ad-free app for digital score-keeping at the card table — installable on your home screen, works completely offline too. It calculates classic scoring, Seeger-Fabian, and Bierlachs all at once, keeps track of Bock and mandatory Ramsch on its own, and can be shared with your fellow players via a table code, so not everyone has to stare at a single phone anymore. Grown out of the wish to make skat evenings a little easier — and still a work in progress.',
   },
   fr: {
     farbe:'Couleur', grand:'Grand', null:'Null', durch:'Marche', ramsch:'Ramsch',
@@ -149,6 +153,8 @@ const T = {
     tischGeschlossenHinweis:'La table a été fermée par le marqueur.',
     tischFehlerErstellen:'Impossible de créer la table. Réessayez plus tard.',
     hinweis:'Info', ok:'OK', ansichtSchliessen:'Fermer',
+    undoConfirmTitle:'Annuler la dernière manche ?',
+    aboutText:'Skat Anschreibung est une application légère et sans publicité pour noter les scores numériquement à la table de jeu — installable sur l\'écran d\'accueil, fonctionne aussi entièrement hors ligne. Elle calcule en même temps le score classique, Seeger-Fabian et Bierlachs, suit automatiquement le Bock et le Ramsch obligatoire, et peut être partagée avec les autres joueurs via un code de table, pour que tout le monde n\'ait plus à fixer un seul téléphone. Née de l\'envie de simplifier un peu les soirées de skat — et toujours en développement.',
   },
   es: {
     farbe:'Palo', grand:'Grand', null:'Null', durch:'Marcha', ramsch:'Ramsch',
@@ -197,6 +203,8 @@ const T = {
     tischGeschlossenHinweis:'La mesa fue cerrada por el anotador.',
     tischFehlerErstellen:'No se pudo crear la mesa. Inténtalo de nuevo más tarde.',
     hinweis:'Aviso', ok:'OK', ansichtSchliessen:'Cerrar',
+    undoConfirmTitle:'¿Deshacer la última ronda?',
+    aboutText:'Skat Anschreibung es una app ligera y sin publicidad para llevar la puntuación digital en la mesa de cartas — instalable en la pantalla de inicio, funciona también sin conexión a internet. Calcula a la vez la puntuación clásica, Seeger-Fabian y Bierlachs, controla automáticamente el Bock y el Ramsch obligatorio, y se puede compartir con los demás jugadores mediante un código de mesa, para que ya no todos tengan que mirar un solo móvil. Nacida del deseo de hacer las noches de skat un poco más sencillas — y todavía en desarrollo.',
   },
   it: {
     farbe:'Seme', grand:'Grand', null:'Null', durch:'Marcia', ramsch:'Ramsch',
@@ -245,6 +253,8 @@ const T = {
     tischGeschlossenHinweis:'Il tavolo è stato chiuso dal segnapunti.',
     tischFehlerErstellen:'Impossibile creare il tavolo. Riprova più tardi.',
     hinweis:'Nota', ok:'OK', ansichtSchliessen:'Chiudi',
+    undoConfirmTitle:'Annullare l\'ultima mano?',
+    aboutText:'Skat Anschreibung è un\'app leggera e senza pubblicità per tenere il punteggio digitale al tavolo da gioco — installabile sulla schermata home, funziona anche completamente offline. Calcola contemporaneamente il punteggio classico, Seeger-Fabian e Bierlachs, tiene traccia da sola di Bock e Ramsch obbligatorio, e può essere condivisa con gli altri giocatori tramite un codice tavolo, così non tutti devono più fissare un solo telefono. Nata dal desiderio di rendere le serate di skat un po\' più semplici — ed è ancora in sviluppo.',
   },
   da: {
     farbe:'Farve', grand:'Grand', null:'Null', durch:'March', ramsch:'Ramsch',
@@ -293,6 +303,8 @@ const T = {
     tischGeschlossenHinweis:'Bordet blev lukket af skriveren.',
     tischFehlerErstellen:'Bordet kunne ikke oprettes. Prøv igen senere.',
     hinweis:'Bemærk', ok:'OK', ansichtSchliessen:'Luk',
+    undoConfirmTitle:'Fortryd sidste runde?',
+    aboutText:'Skat Anschreibung er en enkel, reklamefri app til digital pointtælling ved kortbordet — kan installeres på hjemmeskærmen og fungerer også helt uden internetforbindelse. Den beregner klassisk, efter Seeger-Fabian og efter Bierlachs samtidig, holder selv styr på Bock og pligt-Ramsch, og kan deles med medspillerne via en bordkode, så ikke alle længere skal stirre på én mobil. Opstået af ønsket om at gøre skataftener lidt nemmere — og stadig under udvikling.',
   },
   th: {
     farbe:'ไพ่สี', grand:'แกรนด์', null:'นัล', durch:'ตีตลอด', ramsch:'แรมช์',
@@ -341,6 +353,8 @@ const T = {
     tischGeschlossenHinweis:'โต๊ะถูกปิดโดยผู้จดคะแนนแล้ว',
     tischFehlerErstellen:'ไม่สามารถสร้างโต๊ะได้ กรุณาลองใหม่ภายหลัง',
     hinweis:'หมายเหตุ', ok:'ตกลง', ansichtSchliessen:'ปิด',
+    undoConfirmTitle:'ยกเลิกรอบล่าสุดหรือไม่?',
+    aboutText:'Skat Anschreibung เป็นแอปเรียบง่าย ไม่มีโฆษณา สำหรับจดคะแนนสแกทแบบดิจิทัลที่โต๊ะไพ่ — ติดตั้งบนหน้าจอหลักได้ และใช้งานได้แม้ไม่มีอินเทอร์เน็ต แอปคำนวณคะแนนแบบคลาสสิก, Seeger-Fabian และ Bierlachs พร้อมกัน คอยติดตาม Bock และ Ramsch บังคับให้เอง และสามารถแชร์กับเพื่อนผู้เล่นผ่านรหัสโต๊ะ เพื่อไม่ให้ทุกคนต้องจ้องมือถือเครื่องเดียว เกิดจากความตั้งใจที่จะทำให้ค่ำคืนเล่นสแกทง่ายขึ้นอีกนิด — และยังคงพัฒนาต่อไป',
   },
   vi: {
     farbe:'Bài màu', grand:'Grand', null:'Null', durch:'Diễu hành', ramsch:'Ramsch',
@@ -389,6 +403,8 @@ const T = {
     tischGeschlossenHinweis:'Bàn đã được người ghi điểm đóng lại.',
     tischFehlerErstellen:'Không thể tạo bàn. Vui lòng thử lại sau.',
     hinweis:'Lưu ý', ok:'OK', ansichtSchliessen:'Đóng',
+    undoConfirmTitle:'Hoàn tác ván vừa rồi?',
+    aboutText:'Skat Anschreibung là một ứng dụng gọn nhẹ, không quảng cáo để ghi điểm kỹ thuật số ngay trên bàn chơi bài — có thể cài lên màn hình chính và hoạt động hoàn toàn không cần internet. Ứng dụng tính điểm theo kiểu cổ điển, Seeger-Fabian và Bierlachs cùng lúc, tự theo dõi Bock và Ramsch bắt buộc, và có thể chia sẻ với những người chơi khác qua mã bàn, để không phải ai cũng chăm chăm nhìn vào một chiếc điện thoại. Ra đời từ mong muốn làm cho những buổi tối chơi Skat đơn giản hơn một chút — và vẫn đang được phát triển.',
   },
   ja: {
     farbe:'スート', grand:'グランド', null:'ヌル', durch:'行進', ramsch:'ラムシュ',
@@ -437,6 +453,8 @@ const T = {
     tischGeschlossenHinweis:'テーブルは記録係によって閉じられました。',
     tischFehlerErstellen:'テーブルを作成できませんでした。後でもう一度お試しください。',
     hinweis:'お知らせ', ok:'OK', ansichtSchliessen:'閉じる',
+    undoConfirmTitle:'直前のラウンドを取り消しますか?',
+    aboutText:'Skat Anschreibungは、カードテーブルでのデジタルスコア記録のための、シンプルで広告のないアプリです — ホーム画面にインストールでき、インターネット接続がなくても完全に動作します。クラシック方式、ゼーガー・ファビアン方式、ビアラックス方式を同時に計算し、ボックとランプフリヒト・ラムシュを自動で管理し、テーブルコードで他のプレイヤーと共有できるため、全員が一台のスマートフォンをのぞき込む必要がなくなります。スカットの夜を少し楽にしたいという思いから生まれ、今も開発中です。',
   },
 };
 

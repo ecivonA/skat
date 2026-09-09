@@ -13,14 +13,18 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Skat Anschreibung</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 </head>
 <body>
 <div class="app">
   <header>
-	<div class="logo" onclick="openTableModal()" style="cursor:pointer">
-	  <span>♠</span> Skat
-	  <span id="syncBadge" class="sync-badge" style="display:none"></span>
-	</div>
+    <div class="logo-row">
+      <div class="logo" onclick="openTableModal()" style="cursor:pointer">
+        <span id="logoSuit" class="logo-suit">♠</span> Skat
+      </div>
+      <button class="info-badge" id="infoBadge" onclick="event.stopPropagation();openAboutModal()" title="Info">ⓘ</button>
+    </div>
     <div class="header-actions">
       <div class="lang-btn" id="langBtn" onclick="toggleLangDropdown(event)">
         <span id="langFlag">🇩🇪</span><span id="langCode">DE</span>
@@ -40,7 +44,6 @@
       <button class="btn-icon" id="settingsBtn" onclick="openSettings()" title="Geldanzeige">$</button>
       <button class="btn-icon" id="wakeLockBtn" onclick="toggleWakeLock()" title="Bildschirm wach halten" style="display:none;opacity:0.4">🔒</button>
       <button class="btn-icon" id="fontBtn" onclick="toggleFont()" title="Schriftgröße">A</button>
-      <button class="btn-icon" id="undoBtn" style="display:none">↩</button>
       <button class="btn-icon" id="resetBtn">🗑</button>
       <button class="btn-icon queue-btn" id="queueBockBtn" onclick="toggleQueueBlock('bock')" title="Bock-Runden vormerken" style="display:none"><span>🔔</span><span class="queue-count" id="queueBockCount">0</span></button>
       <button class="btn-icon queue-btn" id="queueRamschBtn" onclick="toggleQueueBlock('ramsch')" title="Pflicht-Ramsch vormerken" style="display:none"><span>💀</span><span class="queue-count" id="queueRamschCount">0</span></button>
@@ -48,6 +51,7 @@
   </header>
 
   <div class="view-tabs" id="viewTabs" style="display:none">
+    <button class="tab-undo-btn" id="undoBtn" style="display:none" title="Letzte Runde rückgängig">↩</button>
     <button class="view-tab active" id="tab-std" onclick="setView('std')">Σ Standard</button>
     <button class="view-tab" id="tab-sf"  onclick="setView('sf')">SF Turnier</button>
     <button class="view-tab" id="tab-bl"  onclick="setView('bl')">BL Bierlachs</button>
@@ -312,24 +316,44 @@
       <button class="currency-btn" data-c="Ct" onclick="setCurrency('Ct')">Ct</button>
     </div>
     <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeTableModal()" data-t="tischFertig"></button>
-	</div>
+      <button class="btn-cancel" onclick="closeSettings()">Schließen</button>
+    </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="tableModal" onclick="closeTableModalOutside(event)">
   <div class="modal">
-    <h2>🔗 Tisch</h2>
+    <h2>🔗 <span data-t="tisch"></span></h2>
     <div id="tableModalBody"></div>
     <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeTableModal()" data-t="tischFertig"</button>
+      <button class="btn-cancel" onclick="closeTableModal()" data-t="tischFertig"></button>
     </div>
   </div>
 </div>
+
+<div class="modal-overlay" id="aboutModal" onclick="if(event.target===this)closeAboutModal()">
+  <div class="modal">
+    <h2>♠ Skat Anschreibung</h2>
+    <p id="aboutVersion" style="font-size:10px;color:var(--muted);margin-bottom:10px"></p>
+    <p id="aboutText" data-t="aboutText" style="font-size:12px;line-height:1.5"></p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeAboutModal()" data-t="tischFertig"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="undoConfirmModal" onclick="if(event.target===this)closeUndoConfirm()">
+  <div class="modal">
+    <h2 data-t="undoConfirmTitle"></h2>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeUndoConfirm()" data-t="abbrechenEdit"></button>
+      <button class="btn-confirm" onclick="confirmUndo()" data-t="rueckgaengig"></button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><span id="toastText"></span> <button id="toastUndo"></button></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <script src="lang.js"></script>
 <script src="calc.js"></script>
 <script src="ui.js"></script>
