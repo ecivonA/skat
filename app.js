@@ -318,6 +318,12 @@ function closeReset(){ document.getElementById('resetModal').classList.remove('s
 function confirmReset(){
   const isHard = document.getElementById('resetModal').dataset.hard === 'true';
   if(isHard){
+    // "Alles zurücksetzen" heißt auch: keinen verwaisten Tisch bei Supabase
+    // zurücklassen. Als Anschreiber wird der Tisch für alle geschlossen, als
+    // Zuschauer einfach verlassen – closeTableSession() unterscheidet das schon.
+    if(typeof currentTable!=='undefined' && currentTable && typeof hardResetSyncState==='function'){
+      hardResetSyncState();
+    }
     // Alles löschen: State, Namen, Geld, Theme, Font, Sprache
     try{ localStorage.clear(); }catch(e){}
     state={ names:['Spieler 1','Spieler 2','Spieler 3'], rounds:[], totals:[0,0,0], lang:'de', has4:false, queue:[] };

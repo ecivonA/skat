@@ -171,6 +171,24 @@ async function closeTableSession(){
 }
 function leaveTableSession(){ teardownTableSession(); }
 
+// Für den Hard-Reset: lokalen Sync-Zustand SOFORT und synchron aufräumen (kein
+// await), damit kein Wettlauf mit einem direkt danach neu gestarteten Tisch
+// entstehen kann. Das Schließen bei Supabase läuft nur noch nebenher im
+// Hintergrund mit, best effort – der lokale Reset wartet nicht darauf.
+function hardResetSyncState(){
+  if(currentTable && currentTable.isMaster && sb){
+    sb.from('tables').update({ status:'closed' }).eq('code', currentTable.code)
+      .then(()=>{}, ()=>{});
+  }
+  if(realtimeChannel && sb){
+    try{ sb.removeChannel(realtimeChannel); }catch(e){}
+    realtimeChannel=null;
+  }
+  currentTable=null;
+  viewerReadOnlyActive=false;
+  saveTableSession();
+}
+
 function teardownTableSession(){
   if(realtimeChannel && sb){ sb.removeChannel(realtimeChannel); realtimeChannel=null; }
   const wasViewer = currentTable && !currentTable.isMaster;
@@ -285,7 +303,8 @@ function lockForViewer(fnName){
 [
   'togglePlayer','setType','toggleOpt','toggleDbl',
   'stepFactor','stepGeschoben','toggleSign','toggleRamschDurch',
-  'vormerken','backToStage1','addRound','openUndoConfirm'
+  'vormerken','backToStage1','addRound','openUndoConfirm',
+  'add4thPlayer','remove4thPlayer'
 ].forEach(lockForViewer);
 
 // Wird von ui.js beim langen Druck auf eine Zeile aufgerufen (siehe Integrationshinweis).
