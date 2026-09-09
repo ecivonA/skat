@@ -847,16 +847,9 @@ function renderTable(){
   const sepEvery=state.has4?4:3;
   document.getElementById('th3').style.display=state.has4?'':'none';
   table.style.display='table';
-  const hasRounds=state.rounds.length>0;
-  // Tab-Zeile ist jetzt IMMER sichtbar (Bock/Ramsch-Glocken müssen schon vor der
-  // ersten Runde erreichbar sein, um eine Pflicht-Queue überhaupt starten zu
-  // können) – nur die Σ/SF/BL-Auswertungs-Tabs selbst ergeben erst mit
-  // Runden Sinn und werden separat ein-/ausgeblendet.
+  // Tab-Zeile inkl. Σ/SF/BL-Tabs ist von Anfang an komplett sichtbar – wirkt
+  // dadurch immer ausgewogen gefüllt, unabhängig von Runden oder Queue.
   document.getElementById('viewTabs').style.display='flex';
-  ['tab-std','tab-sf','tab-bl'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.display = hasRounds ? '' : 'none';
-  });
   const hasQueue=state.queue&&state.queue.length>0;
   if(state.rounds.length===0&&!hasQueue){
     empty.style.display='block';tbody.innerHTML='';tfoot.innerHTML='';return;

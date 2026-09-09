@@ -204,7 +204,7 @@
   .lang-option:hover,.lang-option.active{background:rgba(232,176,75,.15);color:var(--accent)}
 
   /* View toggle tabs */
-  .view-tabs{position:fixed;top:58px;left:0;right:0;display:flex;gap:4px;padding:4px 8px;background:var(--bg);z-index:9;border-bottom:1px solid var(--border);max-width:600px;margin:0 auto}
+  .view-tabs{position:fixed;top:58px;left:0;right:0;display:flex;justify-content:center;gap:4px;padding:4px 8px;background:var(--bg);z-index:9;border-bottom:1px solid var(--border);max-width:600px;margin:0 auto}
   .view-tab{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--muted);font-family:'Source Code Pro',monospace;font-size:10px;padding:4px 2px;cursor:pointer;text-align:center;transition:all .15s}
   .view-tab.active{border-color:var(--accent);background:rgba(232,176,75,.12);color:var(--accent);font-weight:700}
   .view-tab:active{transform:scale(.95)}
