@@ -509,3 +509,15 @@ html[data-theme="light"] .dbl-btn.active { background:#1a3a8f; border-color:#1a3
 html[data-theme="light"] .col-drag-ghost {
   box-shadow: 0 4px 20px rgba(0,0,0,.25);
 }
+
+/* Multi-Sync */
+.sync-badge{
+  display:inline-block; width:9px; height:9px; border-radius:50%;
+  margin-left:6px; vertical-align:middle;
+}
+.sync-badge.sync-master{ background:var(--green); box-shadow:0 0 6px var(--green); animation:syncPulse 1.6s infinite; }
+.sync-badge.sync-viewer{ background:#4a9eff; box-shadow:0 0 6px #4a9eff; }
+@keyframes syncPulse{ 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* Zuschauer-Modus: Eingabe-Panel-Zeilen optisch als reine Ansicht kennzeichnen */
+body.viewer-mode .table-wrap{ border-top:2px solid #4a9eff; }
