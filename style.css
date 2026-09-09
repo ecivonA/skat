@@ -168,6 +168,7 @@
   .game-type-tag.suit-s { color:#fff;    background:#2471a3; border-radius:3px; padding:1px 4px }
   .game-type-tag.suit-c { color:#1a1a2e; background:#27ae60; border-radius:3px; padding:1px 4px }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
   body{background:var(--bg);color:var(--text);font-family:'Source Code Pro',monospace;min-height:100vh;overflow-x:hidden}
   body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,.01) 2px,rgba(255,255,255,.01) 4px),repeating-linear-gradient(-45deg,transparent,transparent 2px,rgba(255,255,255,.01) 2px,rgba(255,255,255,.01) 4px);pointer-events:none;z-index:0}
   .app{position:relative;z-index:1;max-width:600px;margin:0 auto}
@@ -508,15 +509,3 @@ html[data-theme="light"] .dbl-btn.active { background:#1a3a8f; border-color:#1a3
 html[data-theme="light"] .col-drag-ghost {
   box-shadow: 0 4px 20px rgba(0,0,0,.25);
 }
-
-/* multi-device sync */
-.sync-badge{
-  display:inline-block; width:9px; height:9px; border-radius:50%;
-  margin-left:6px; vertical-align:middle;
-}
-.sync-badge.sync-master{ background:var(--green); box-shadow:0 0 6px var(--green); animation:syncPulse 1.6s infinite; }
-.sync-badge.sync-viewer{ background:#4a9eff; box-shadow:0 0 6px #4a9eff; }
-@keyframes syncPulse{ 0%,100%{opacity:1} 50%{opacity:.4} }
-
-/* Zuschauer-Modus: Eingabe-Panel-Zeilen optisch als reine Ansicht kennzeichnen */
-body.viewer-mode .table-wrap{ border-top:2px solid #4a9eff; }

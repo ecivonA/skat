@@ -210,6 +210,14 @@ function applyViewerMode(on){
   document.body.classList.toggle('viewer-mode', on);
   const panel=document.getElementById('inputPanel');
   if(panel) panel.style.display = on ? 'none' : '';
+  // --panel-h steuert, wo .table-wrap (position:fixed) unten endet. Wird nur von
+  // updatePanelHeight() gepflegt, das hier nicht automatisch mitläuft – daher bei
+  // ausgeblendetem Panel manuell auf 0 setzen, sonst bleibt eine Lücke unten stehen.
+  if(on){
+    document.documentElement.style.setProperty('--panel-h','0px');
+  } else if(typeof updatePanelHeight==='function'){
+    updatePanelHeight();
+  }
   const undoBtn=document.getElementById('undoBtn');
   if(undoBtn) undoBtn.style.display = on ? 'none' : '';
   const resetBtn=document.getElementById('resetBtn');
@@ -324,6 +332,7 @@ function closeViewerReadOnly(){
   viewerPeekIdx = null;
   const panel=document.getElementById('inputPanel');
   if(panel) panel.style.display='none';
+  document.documentElement.style.setProperty('--panel-h','0px');
   const bar=document.getElementById('viewerCloseBar');
   if(bar) bar.style.display='none';
   document.querySelectorAll('#stage1 button, #stage1 input, #stage2 button, #stage2 input')
