@@ -285,7 +285,7 @@ function lockForViewer(fnName){
 [
   'togglePlayer','setType','toggleOpt','toggleDbl',
   'stepFactor','stepGeschoben','toggleSign','toggleRamschDurch',
-  'vormerken','backToStage1','addRound'
+  'vormerken','backToStage1','addRound','openUndoConfirm'
 ].forEach(lockForViewer);
 
 // Wird von ui.js beim langen Druck auf eine Zeile aufgerufen (siehe Integrationshinweis).
