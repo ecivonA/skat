@@ -106,10 +106,8 @@ function toggleQueueBlock(tp){
   if(state.queue.length > 0 && state.rounds.length === 0){
     const el=document.getElementById('emptyState');
     const sc=document.getElementById('scoreTable');
-    const tw=document.getElementById('tableWrap');
     if(el) el.style.display='none';
     if(sc) sc.style.display='table';
-    if(tw) tw.classList.remove('no-tabs');
   }
 }
 
