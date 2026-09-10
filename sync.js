@@ -177,10 +177,17 @@ function leaveTableSession(){ teardownTableSession(); }
 // await), damit kein Wettlauf mit einem direkt danach neu gestarteten Tisch
 // entstehen kann. Das Schließen bei Supabase läuft nur noch nebenher im
 // Hintergrund mit, best effort – der lokale Reset wartet nicht darauf.
-function hardResetSyncState(){
+async function hardResetSyncState(){
   if(currentTable && currentTable.isMaster && sb){
-    sb.from('tables').update({ status:'closed' }).eq('code', currentTable.code)
-      .then(()=>{}, ()=>{});
+    // Wirklich abwarten statt fire-and-forget – sonst kann das direkt danach
+    // folgende localStorage.clear() den Request beenden, bevor er überhaupt
+    // abgeschickt wurde. Timeout als Fallback, falls gerade offline.
+    try{
+      await Promise.race([
+        sb.from('tables').update({ status:'closed' }).eq('code', currentTable.code),
+        new Promise(resolve=>setTimeout(resolve, 1500))
+      ]);
+    }catch(e){ console.warn('Tisch-Schließen beim Hard-Reset fehlgeschlagen:', e); }
   }
   if(realtimeChannel && sb){
     try{ sb.removeChannel(realtimeChannel); }catch(e){}
@@ -189,6 +196,7 @@ function hardResetSyncState(){
   currentTable=null;
   viewerReadOnlyActive=false;
   saveTableSession();
+  updateHeaderSyncBadge();
 }
 
 function teardownTableSession(){

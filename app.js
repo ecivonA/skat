@@ -299,14 +299,15 @@ function confirmUndo(){ closeUndoConfirm(); undoLast(); }
 // ===== RESET =====
 function closeReset(){ document.getElementById('resetModal').classList.remove('show'); }
 
-function confirmReset(){
+async function confirmReset(){
   const isHard = document.getElementById('resetModal').dataset.hard === 'true';
   if(isHard){
     // "Alles zurücksetzen" heißt auch: keinen verwaisten Tisch bei Supabase
     // zurücklassen. Als Anschreiber wird der Tisch für alle geschlossen, als
-    // Zuschauer einfach verlassen – closeTableSession() unterscheidet das schon.
+    // Zuschauer einfach verlassen. Wird jetzt wirklich abgewartet (max. 1,5s),
+    // statt localStorage.clear() dazwischenfunken zu lassen.
     if(typeof currentTable!=='undefined' && currentTable && typeof hardResetSyncState==='function'){
-      hardResetSyncState();
+      await hardResetSyncState();
     }
     // Alles löschen: State, Namen, Geld, Theme, Font, Sprache
     try{ localStorage.clear(); }catch(e){}

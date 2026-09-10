@@ -790,7 +790,7 @@ function openRoundForEdit(idx){
 // ===== RENDER =====
 function renderAll(){
   updateHeaders(); renderTable(); updatePlayerBtns();
-  document.getElementById('undoBtn').style.display=state.rounds.length>0?'flex':'none';
+  document.getElementById('undoBtn').style.display=(state.rounds.length>0 && !(typeof viewerReadOnlyActive!=='undefined' && viewerReadOnlyActive))?'flex':'none';
   if(openRoundIdx<0 && editRoundIdx<0){
     document.getElementById('stage1').style.display='';
     document.getElementById('stage2').style.display='none';
