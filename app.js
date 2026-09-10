@@ -555,7 +555,7 @@ if(document.getElementById('inputPanel')){
     const noRounds = state.rounds.length === 0;
     openResetDialog(noRounds);
   });
-  document.getElementById('undoBtn').addEventListener('click', openUndoConfirm);
+  document.getElementById('undoBtn').addEventListener('click', function(){ openUndoConfirm(); });
   document.getElementById('toastUndo').onclick = function(){
     if(!lastDeleted) return;
     if(lastDeleted.queueBefore!==undefined){

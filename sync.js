@@ -99,7 +99,7 @@ async function joinTableSession(rawCode){
     return;
   }
 
-  currentTable={ code, isMaster:false };
+  currentTable={ code, isMaster:false, updatedAt:data.updated_at };
   saveTableSession();
   state = data.state;
   saveLocalOnly();
@@ -124,6 +124,8 @@ function subscribeTable(code){
         if(row.status==='closed'){ handleTableClosedRemotely(); return; }
         if(currentTable && !currentTable.isMaster){
           state = row.state;
+          currentTable.updatedAt = row.updated_at;
+          saveTableSession();
           saveLocalOnly();
           if(viewerPeekIdx !== null){
             // Anschreiber hat währenddessen weitergemacht – Lese-Ansicht schließen,
@@ -478,14 +480,21 @@ async function restoreTableSessionIfAny(){
     return;
   }
 
-  currentTable={ code:saved.code, isMaster:saved.isMaster };
+  currentTable={ code:saved.code, isMaster:saved.isMaster, updatedAt:data.updated_at };
   if(!currentTable.isMaster){
-    // Zuschauer: Server-Stand kann inzwischen weiter sein als der lokal gecachte
-    state = data.state;
-    saveLocalOnly();
-    renderAll(); updateCalcUI(); updateQueueUI(); applyTranslations();
+    // Nur übernehmen, wenn der frisch geholte Stand wirklich nicht älter ist als
+    // der zuletzt bekannte – sonst könnte ein Wettlauf (z.B. verzögerter Push,
+    // kurz danach direkt ein Reload) einen neueren lokalen Stand überschreiben.
+    const localTime = saved.updatedAt ? new Date(saved.updatedAt).getTime() : 0;
+    const freshTime  = data.updated_at ? new Date(data.updated_at).getTime() : 0;
+    if(freshTime >= localTime){
+      state = data.state;
+      saveLocalOnly();
+      renderAll(); updateCalcUI(); updateQueueUI(); applyTranslations();
+    }
     applyViewerMode(true);
   }
+  saveTableSession();
   // Master: state ist bereits die lokale Quelle der Wahrheit, nichts überschreiben –
   // nur wieder andocken, damit z.B. ein Fernschließen künftig ankäme.
   subscribeTable(currentTable.code);
