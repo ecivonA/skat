@@ -25,13 +25,13 @@ function nullOuvert(v) { return v===46||v===59||v===92; }
 function nullRevol(v)  { return v===92; }
 
 function nullLabel(v){
-  let s = '🚫 Null';
+  let s = '<span style="color:var(--red)">∅</span> Null';
   if(nullRevol(v))     s += ' 🌀';
   else { if(nullOuvert(v)) s += ' 👁'; if(nullHand(v)) s += ' ✋'; }
   return s;
 }
 function nullLabelShort(v){
-  let s = '🚫 Null';
+  let s = '<span style="color:var(--red)">∅</span> Null';
   if(nullRevol(v))     s += ' 🌀';
   else { if(nullOuvert(v)) s += ' 👁'; if(nullHand(v)) s += ' ✋'; }
   return s;
