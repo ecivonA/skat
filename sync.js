@@ -351,6 +351,17 @@ function viewRoundReadOnly(idx){
   const vmBtn=document.getElementById('vormerkenBtn');
   if(vmBtn) vmBtn.style.display='none';
   showViewerCloseBar();
+
+  // Klick außerhalb des Panels schließt die Lese-Ansicht – mit kurzer Verzögerung
+  // registriert, damit der lange Druck, der die Ansicht gerade erst geöffnet hat,
+  // sie nicht im selben Moment wieder zuklappt.
+  setTimeout(()=>{ document.addEventListener('click', _viewerOutsideClickHandler, true); }, 200);
+}
+function _viewerOutsideClickHandler(e){
+  const panel=document.getElementById('inputPanel');
+  if(panel && !panel.contains(e.target)){
+    closeViewerReadOnly();
+  }
 }
 function showViewerCloseBar(){
   let bar=document.getElementById('viewerCloseBar');
@@ -366,6 +377,7 @@ function showViewerCloseBar(){
 }
 function closeViewerReadOnly(){
   viewerPeekIdx = null;
+  document.removeEventListener('click', _viewerOutsideClickHandler, true);
   const panel=document.getElementById('inputPanel');
   if(panel) panel.style.display='none';
   document.documentElement.style.setProperty('--panel-h','0px');

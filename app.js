@@ -348,9 +348,9 @@ function openResetDialog(hard){
   const modal = document.getElementById('resetModal');
   modal.dataset.hard = hard ? 'true' : 'false';
   if(hard){
-    document.getElementById('modalTitle').textContent  = '⚠️ Alles zurücksetzen?';
-    document.getElementById('modalText').textContent   = 'Namen, Währung, Sprache, Theme – wirklich alles wird gelöscht.';
-    document.getElementById('modalConfirm').textContent= 'Alles löschen';
+    document.getElementById('modalTitle').textContent  = t('hardResetTitle');
+    document.getElementById('modalText').textContent   = t('hardResetText');
+    document.getElementById('modalConfirm').textContent= t('loeschen');
   } else {
     document.getElementById('modalTitle').textContent  = t('modalTitle');
     document.getElementById('modalText').textContent   = t('modalText');
