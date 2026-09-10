@@ -25,13 +25,13 @@ function nullOuvert(v) { return v===46||v===59||v===92; }
 function nullRevol(v)  { return v===92; }
 
 function nullLabel(v){
-  let s = '∅ Null';
+  let s = '🚫 Null';
   if(nullRevol(v))     s += ' 🌀';
   else { if(nullOuvert(v)) s += ' 👁'; if(nullHand(v)) s += ' ✋'; }
   return s;
 }
 function nullLabelShort(v){
-  let s = '∅ Null';
+  let s = '🚫 Null';
   if(nullRevol(v))     s += ' 🌀';
   else { if(nullOuvert(v)) s += ' 👁'; if(nullHand(v)) s += ' ✋'; }
   return s;
@@ -109,10 +109,10 @@ function getShortLabel(){
   if(calc.type === 'farbe'){
     return FARBEN_SYM[calc.farbeIdx] + ' ' + T[lang].farbenNamen[calc.farbeIdx];
   }
-  if(calc.type === 'grand') return '🃏 Grand';
+  if(calc.type === 'grand') return '🔱 Grand';
   if(calc.type === 'null')  return nullLabel(calc.nullVal);
   if(calc.type === 'ramsch') return '💀 ' + t('ramsch');
-  if(calc.type === 'leer')  return '⊘ ' + t('leer');
+  if(calc.type === 'leer')  return '😐 ' + t('leer');
   return '';
 }
 
@@ -125,7 +125,7 @@ function labelFromKey(r){
     const idx = parseInt(k.split(':')[1]);
     return FARBEN_SYM[idx] + ' ' + T[lang].farbenNamen[idx];
   }
-  if(k === 'grand') return '🃏 Grand';
+  if(k === 'grand') return '🔱 Grand';
   if(k.startsWith('null:')){
     const parts = k.split(':');
     const nv = parseInt(parts[1]), hand = parts[2]==='1', ouvert = parts[3]==='1';
@@ -136,7 +136,7 @@ function labelFromKey(r){
     return s;
   }
   if(k === 'ramsch') return '💀 ' + t('ramsch');
-  if(k === 'leer')   return '⊘ ' + t('leer');
+  if(k === 'leer')   return '😐 ' + t('leer');
   return r.label || '';
 }
 
@@ -154,7 +154,7 @@ function getFormula(){
   if(calc.type === 'rgh')    return '🃏 RGH 24×' + calc.factor;
   if(isDurchActive()) return 'Ramsch Durch 120' +
     (calc.geschoben > 0 ? ' ×' + Math.pow(2,calc.geschoben) + ' (' + calc.geschoben + '× ' + t('geschoben') + ')' : '');
-  if(calc.type === 'leer') return '⊘ ' + t('leer');
+  if(calc.type === 'leer') return '😐 ' + t('leer');
   let p = [];
   if(calc.type === 'farbe')  p.push(getFarbeName() + ' ' + getFarbeVal() + '×' + calc.factor);
   else if(calc.type === 'grand') p.push('Grand 24×' + calc.factor);
