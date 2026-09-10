@@ -112,7 +112,7 @@ function getShortLabel(){
   if(calc.type === 'grand') return '🔱 Grand';
   if(calc.type === 'null')  return nullLabel(calc.nullVal);
   if(calc.type === 'ramsch') return '💀 ' + t('ramsch');
-  if(calc.type === 'leer')  return '😐 ' + t('leer');
+  if(calc.type === 'leer')  return '🚧 ' + t('leer');
   return '';
 }
 
@@ -136,7 +136,7 @@ function labelFromKey(r){
     return s;
   }
   if(k === 'ramsch') return '💀 ' + t('ramsch');
-  if(k === 'leer')   return '😐 ' + t('leer');
+  if(k === 'leer')   return '🚧 ' + t('leer');
   return r.label || '';
 }
 
@@ -154,7 +154,7 @@ function getFormula(){
   if(calc.type === 'rgh')    return '🃏 RGH 24×' + calc.factor;
   if(isDurchActive()) return 'Ramsch Durch 120' +
     (calc.geschoben > 0 ? ' ×' + Math.pow(2,calc.geschoben) + ' (' + calc.geschoben + '× ' + t('geschoben') + ')' : '');
-  if(calc.type === 'leer') return '😐 ' + t('leer');
+  if(calc.type === 'leer') return '🚧 ' + t('leer');
   let p = [];
   if(calc.type === 'farbe')  p.push(getFarbeName() + ' ' + getFarbeVal() + '×' + calc.factor);
   else if(calc.type === 'grand') p.push('Grand 24×' + calc.factor);
