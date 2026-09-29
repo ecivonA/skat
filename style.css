@@ -153,20 +153,20 @@
   /* Suit colors */
   .suit-d { color: #1a1a2e; background: #e8a030; border-color: #e8a030 }
   .suit-h { color: #fff;    background: #c0392b; border-color: #c0392b }
-  .suit-s { color: #fff;    background: #2471a3; border-color: #2471a3 }
-  .suit-c { color: #1a1a2e; background: #27ae60; border-color: #27ae60 }
+  .suit-s { color: #1a1a2e; background: #27ae60; border-color: #27ae60 }
+  .suit-c { color: #fff;    background: #2471a3; border-color: #2471a3 }
   .farbe-btn[data-fi="0"] { color: #e8a030; border-color: #e8a03060 }
   .farbe-btn[data-fi="1"] { color: #e74c3c; border-color: #e74c3c60 }
-  .farbe-btn[data-fi="2"] { color: #5dade2; border-color: #5dade260 }
-  .farbe-btn[data-fi="3"] { color: #2ecc71; border-color: #2ecc7160 }
+  .farbe-btn[data-fi="2"] { color: #2ecc71; border-color: #2ecc7160 }
+  .farbe-btn[data-fi="3"] { color: #5dade2; border-color: #5dade260 }
   .farbe-btn.active[data-fi="0"] { background:#e8a030; color:#1a1a2e; border-color:#e8a030 }
   .farbe-btn.active[data-fi="1"] { background:#c0392b; color:#fff;    border-color:#c0392b }
-  .farbe-btn.active[data-fi="2"] { background:#2471a3; color:#fff;    border-color:#2471a3 }
-  .farbe-btn.active[data-fi="3"] { background:#27ae60; color:#1a1a2e; border-color:#27ae60 }
+  .farbe-btn.active[data-fi="2"] { background:#27ae60; color:#1a1a2e; border-color:#27ae60 }
+  .farbe-btn.active[data-fi="3"] { background:#2471a3; color:#fff;    border-color:#2471a3 }
   .game-type-tag.suit-d { color:#1a1a2e; background:#e8a030; border-radius:3px; padding:1px 4px }
   .game-type-tag.suit-h { color:#fff;    background:#c0392b; border-radius:3px; padding:1px 4px }
-  .game-type-tag.suit-s { color:#fff;    background:#2471a3; border-radius:3px; padding:1px 4px }
-  .game-type-tag.suit-c { color:#1a1a2e; background:#27ae60; border-radius:3px; padding:1px 4px }
+  .game-type-tag.suit-s { color:#1a1a2e; background:#27ae60; border-radius:3px; padding:1px 4px }
+  .game-type-tag.suit-c { color:#fff;    background:#2471a3; border-radius:3px; padding:1px 4px }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html{background:var(--bg)}
   body{background:var(--bg);color:var(--text);font-family:'Source Code Pro',monospace;min-height:100vh;overflow-x:hidden}

@@ -279,7 +279,7 @@ function hideToast(){ document.getElementById('toast').classList.remove('show');
 // ===== VERSION / ÜBER DIESE APP =====
 // Manuell synchron mit der CACHE-Konstante in sw.js halten (dort ist die
 // "echte" Versionsverwaltung fürs Caching, hier nur zur Anzeige im Modal).
-const APP_VERSION = 'v3.07';
+const APP_VERSION = 'v3.08';
 
 function openAboutModal(){
   const vEl=document.getElementById('aboutVersion');
