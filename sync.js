@@ -428,7 +428,9 @@ function renderTableModalContent(){
       </div>
       <div style="margin-top:16px;display:flex;gap:8px;align-items:center">
         <input class="settings-input" id="joinCodeInput" maxlength="5" placeholder="${t('tischCodePlatzhalter')}"
-               style="text-transform:uppercase;flex:1" oninput="this.value=this.value.toUpperCase()">
+               style="text-transform:uppercase;flex:1" oninput="this.value=this.value.toUpperCase()"
+               enterkeyhint="go" autocomplete="off"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();joinTableSession(this.value);}">
         <button class="btn-confirm" onclick="joinTableSession(document.getElementById('joinCodeInput').value)">${t('tischBeitreten')}</button>
       </div>
       <div id="joinErrorMsg" style="display:none;color:var(--red,#e55);font-size:11px;margin-top:6px">
