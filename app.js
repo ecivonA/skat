@@ -26,7 +26,8 @@ function getAussetzer(){
   if(!state.has4) return -1;
   let idx=0;
   for(const r of state.rounds){
-    if(!r.isRamschGH && r.typeKey!=='rgh') idx=(idx+1)%4;
+    // Offene (vorgemerkte) Runden zählen erst nach Abschluss von Stage 2
+    if(!r.open && !r.isRamschGH && r.typeKey!=='rgh') idx=(idx+1)%4;
   }
   return idx;
 }
@@ -39,7 +40,8 @@ function getGeber(){
   if(state.has4) return getAussetzer();
   let idx=0;
   for(const r of state.rounds){
-    if(!r.isRamschGH && r.typeKey!=='rgh') idx=(idx+1)%3;
+    // Offene (vorgemerkte) Runden zählen erst nach Abschluss von Stage 2
+    if(!r.open && !r.isRamschGH && r.typeKey!=='rgh') idx=(idx+1)%3;
   }
   return idx;
 }
@@ -277,7 +279,7 @@ function hideToast(){ document.getElementById('toast').classList.remove('show');
 // ===== VERSION / ÜBER DIESE APP =====
 // Manuell synchron mit der CACHE-Konstante in sw.js halten (dort ist die
 // "echte" Versionsverwaltung fürs Caching, hier nur zur Anzeige im Modal).
-const APP_VERSION = 'v3.05';
+const APP_VERSION = 'v3.06';
 
 function openAboutModal(){
   const vEl=document.getElementById('aboutVersion');
