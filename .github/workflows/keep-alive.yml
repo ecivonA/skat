@@ -1,6 +1,6 @@
-# In eurem Repo ablegen unter: .github/workflows/keep-alive.yml
-# Zusätzlich als Repo-Secret anlegen: SUPABASE_ANON_KEY, SUPABASE_URL
-# (Settings -> Secrets and variables -> Actions -> New repository secret)
+# Pingt Supabase alle 5 Tage, damit das Free-Tier-Projekt nicht nach 7 Tagen pausiert.
+# URL und Anon-/Publishable-Key werden direkt aus sync.js gelesen (sind dort ohnehin öffentlich),
+# daher sind keine Repo-Secrets nötig und Workflow + App können nicht auseinanderlaufen.
 
 name: Supabase Keep-Alive
 
@@ -13,9 +13,24 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: sync.js
+          sparse-checkout-cone-mode: false
+
       - name: Ping Supabase
         run: |
-          curl -s -o /dev/null -w "%{http_code}" \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/tables?select=code&limit=1" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
+          URL=$(grep -oP "SUPABASE_URL\s*=\s*'\K[^']+" sync.js)
+          KEY=$(grep -oP "SUPABASE_ANON_KEY\s*=\s*'\K[^']+" sync.js)
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "::error::SUPABASE_URL oder SUPABASE_ANON_KEY nicht in sync.js gefunden"
+            exit 1
+          fi
+          CODE=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 30 \
+            "$URL/rest/v1/tables?select=code&limit=1" \
+            -H "apikey: $KEY")
+          echo "HTTP $CODE"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::Supabase antwortete mit HTTP $CODE"
+            exit 1
+          fi
