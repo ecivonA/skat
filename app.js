@@ -279,7 +279,7 @@ function hideToast(){ document.getElementById('toast').classList.remove('show');
 // ===== VERSION / ÜBER DIESE APP =====
 // Manuell synchron mit der CACHE-Konstante in sw.js halten (dort ist die
 // "echte" Versionsverwaltung fürs Caching, hier nur zur Anzeige im Modal).
-const APP_VERSION = 'v3.08';
+const APP_VERSION = 'v3.09';
 
 function openAboutModal(){
   const vEl=document.getElementById('aboutVersion');
@@ -398,7 +398,7 @@ document.addEventListener('click', ()=>{
 
 function setLang(l){
   lang=l; state.lang=l; save();
-  const flags={'de':'🇩🇪','en':'🇬🇧','fr':'🇫🇷','es':'🇪🇸','it':'🇮🇹','da':'🇩🇰','th':'🇹🇭','vi':'🇻🇳','ja':'🇯🇵'};
+  const flags={'de':'🇩🇪','en':'🇬🇧','fr':'🇫🇷','es':'🇪🇸','it':'🇮🇹','da':'🇩🇰','nl':'🇳🇱','th':'🇹🇭','vi':'🇻🇳','ja':'🇯🇵'};
   document.getElementById('langFlag').textContent=flags[l]||'🌐';
   document.getElementById('langCode').textContent=l.toUpperCase();
   document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active',o.dataset.lang===l));
@@ -516,7 +516,7 @@ if('wakeLock' in navigator){
 
 // Sprach-UI initialisieren (Flag + aktive Option markieren)
 {
-  const flags={'de':'🇩🇪','en':'🇬🇧','fr':'🇫🇷','es':'🇪🇸','it':'🇮🇹','da':'🇩🇰','th':'🇹🇭','vi':'🇻🇳','ja':'🇯🇵'};
+  const flags={'de':'🇩🇪','en':'🇬🇧','fr':'🇫🇷','es':'🇪🇸','it':'🇮🇹','da':'🇩🇰','nl':'🇳🇱','th':'🇹🇭','vi':'🇻🇳','ja':'🇯🇵'};
   const flagEl=document.getElementById('langFlag');
   const codeEl=document.getElementById('langCode');
   if(flagEl) flagEl.textContent=flags[lang]||'🌐';
